@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 sbt ornate
-cp -r target/doc .
+cp -r target/doc ./docs
