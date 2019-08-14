@@ -22,4 +22,4 @@ res0: Int = 2
 推荐使用[IDEA](https://www.jetbrains.com/idea/download/)加上它官方的用来编辑Scala代码.当然,其实用任何文本编辑器或者IDE都是可以的,但是在强大的IDE帮助下整个过程能够更加得心应手.商业版的功能更强大,不过就教学目的而言,社区版已经足够了.
 
 ### 习题集
-这份讲义对应的习题集放在[这里](https://github.com/Renkai/bigdata-hands-on-quiz).如果使用IDEA打开这个项目的话,记得导入时候选择`Import project from external model -> Gradle`获得完整功能
+这份讲义对应的习题集放在[这里](https://github.com/fordeal-smalldata/bigdata-hands-on-quiz).如果使用IDEA打开这个项目的话,记得导入时候选择`Import project from external model -> Gradle`获得完整功能.
