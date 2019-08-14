@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="theme/css/foundation.min.css">
     <link rel="stylesheet" href="theme/css/app.css">
     
-     <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
+     <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
      <link rel="start" href="index.html"  title="Scala 语言入门"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
@@ -62,7 +62,22 @@
                 
                 <h1 id="scala-语言入门" class="a_section" data-magellan-target="scala-语言入门">Scala 语言入门<a class="a_hlink" href="#scala-语言入门"></a></h1>
 <p>Scala是目前在大数据处理技术中广泛应用的语言,现在主流的数据基础设施Spark,Flink,Kafka都使用了大量Scala代码用来做实现或者接口.当然,这些框架同时都会有Java接口,像Spark甚至还有Python和R语言的接口.不会Scala也能正常使用这些设施.但是学习Scala可以让开发者加深对这些设施的理解,更好地利用他们输出成果,甚至说可以帮助软件开发者整体上成为一个更好的程序员,而不只是在数据处理领域.</p>
-<p>不过本系列讲义会更关注于数据处理,不会教会您用Scala做到一切事情(可能会列一些参考资料,那些资料能教您做这些)</p>
+<p>不过本系列讲义会更关注于数据处理,不会教会您用Scala做到一切事情(可能会列一些参考资料,那些资料能教您做这些),这份讲义假定您已经有一定的Java开发经验,在此基础上进行教学.</p>
+<h2 id="环境部署" class="a_section" data-magellan-target="环境部署">环境部署<a class="a_hlink" href="#环境部署"></a></h2>
+<p>开始学习前我们先安装下必要环境</p>
+<h3 id="ammonite" class="a_section" data-magellan-target="ammonite">Ammonite<a class="a_hlink" href="#ammonite"></a></h3>
+<p><a href="http://ammonite.io/#Ammonite">Ammonite</a>是一个Scala的REPL环境,可以帮助您快速试验一些简单的Scala代码,安装方式在<a href="http://ammonite.io/#Ammonite-REPL">这里</a></p>
+<p>在终端敲击<code class="hljs language-scala">amm</code>打开Ammonite,键入<code class="hljs language-scala"><span class="hljs-number">1</span>+<span class="hljs-number">1</span></code>回车,见到<code class="hljs language-scala">res0: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span></code>字样就说明已经安装成功了</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  ~ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@ <span class="hljs-number">1</span>+<span class="hljs-number">1</span>
+res0: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
+</code></pre>
+</div></div>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
@@ -105,6 +120,47 @@
                 </div>
               
               
+              
+                <div class="small-12 medium-12 large-2 large-order-3 columns a_show-for-xlarge" data-sticky-container>
+                  <nav class="a_pagenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                     <header><p>On This Page</p>
+</header> 
+                    <ul class="vertical menu" data-magellan>
+                       
+  
+    <li>
+      
+         <a href="#scala-语言入门">Scala 语言入门</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#环境部署">环境部署</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#ammonite">Ammonite</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+ 
+                    </ul>
+                  </nav>
+                </div>
               
             </div>
           </div>

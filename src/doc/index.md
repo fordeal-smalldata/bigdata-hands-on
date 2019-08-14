@@ -1,4 +1,20 @@
 # Scala 语言入门
 Scala是目前在大数据处理技术中广泛应用的语言,现在主流的数据基础设施Spark,Flink,Kafka都使用了大量Scala代码用来做实现或者接口.当然,这些框架同时都会有Java接口,像Spark甚至还有Python和R语言的接口.不会Scala也能正常使用这些设施.但是学习Scala可以让开发者加深对这些设施的理解,更好地利用他们输出成果,甚至说可以帮助软件开发者整体上成为一个更好的程序员,而不只是在数据处理领域.
 
-不过本系列讲义会更关注于数据处理,不会教会您用Scala做到一切事情(可能会列一些参考资料,那些资料能教您做这些)
+不过本系列讲义会更关注于数据处理,不会教会您用Scala做到一切事情(可能会列一些参考资料,那些资料能教您做这些),这份讲义假定您已经有一定的Java开发经验,在此基础上进行教学.
+
+## 环境部署
+开始学习前我们先安装下必要环境
+### Ammonite
+[Ammonite](http://ammonite.io/#Ammonite)是一个Scala的REPL环境,可以帮助您快速试验一些简单的Scala代码,安装方式在[这里](http://ammonite.io/#Ammonite-REPL)
+
+在终端敲击`amm`打开Ammonite,键入`1+1`回车,见到`res0: Int = 2`字样就说明已经安装成功了
+```scala
+➜  ~ amm
+Loading...
+Welcome to the Ammonite Repl 1.6.8
+(Scala 2.13.0 Java 1.8.0_181)
+If you like Ammonite, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@ 1+1
+res0: Int = 2
+```
