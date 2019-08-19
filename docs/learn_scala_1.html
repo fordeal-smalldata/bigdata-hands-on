@@ -79,6 +79,31 @@ String b = <span class="hljs-string">"string"</span>;
 </div></div>
 <h2 id="类型" class="a_section" data-magellan-target="类型">类型<a class="a_hlink" href="#类型"></a></h2>
 <p><img src="images/tumblr_lylhmlhD061qd12yo.png" alt="image" /></p>
+<p>上面一幅图介绍了现在各个主流编程语言的静态类型/动态类型,强类型/弱类型属性,关于这幅图片的原始文章可以看<a href="https://dustyprogrammer-blog.tumblr.com/post/16746798643/should-your-start-up-go-static-or-dynamic">这里</a>,网上还有许多讨论,比如<a href="https://segmentfault.com/a/1190000012372372">这里</a>和<a href="https://www.zhihu.com/question/19918532">这里</a>,本文不再赘述.我主要想介绍的是,Scala其实是静态强类型语言,很多缺少了解的人粗略看一些源码,见到一个<code class="hljs language-scala"><span class="hljs-keyword">var</span> ...</code>就认为是JavaScript那样的动态弱类型语言,这个理解是错误的.</p>
+<p>为什么一个静态强类型语言会容易被人误认为是弱类型语言呢?这其中的关键在于<a href="https://zh.wikipedia.org/wiki/%E7%B1%BB%E5%9E%8B%E6%8E%A8%E8%AE%BA">类型自动推导</a>.有更多兴趣的人可以看看<a href="https://www.zhihu.com/search?type=content&amp;q=%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC">知乎相关文章</a>.如果您关心C++和Java的话,应该知道<a href="https://en.cppreference.com/w/cpp/language/auto">C++11</a>和<a href="https://openjdk.java.net/projects/amber/LVTIFAQ.html">Java11</a>都已经有了类型自动推导的特性,遗憾的是,由于实际工作环境中的历史遗留问题,很多C++和Java用户不知道什么时候才能真的用上这些特性.</p>
+<p>在Scala里情况就好多了, Scala从最早的版本开始就支持类型自动推导,您可以打开Ammonite试试键入<code class="hljs language-scala"><span class="hljs-keyword">val</span> a=<span class="hljs-number">3</span></code>,和<code class="hljs language-scala"><span class="hljs-keyword">val</span> b:<span class="hljs-type">Int</span> = <span class="hljs-number">3</span></code>还有<code class="hljs language-scala"><span class="hljs-keyword">val</span> c: <span class="hljs-type">String</span> = <span class="hljs-number">3</span></code>看看结果.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  ~ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@ <span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span>
+a: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span>
+
+renkai-renkai@ <span class="hljs-keyword">val</span> b: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span>
+b: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span>
+
+renkai-renkai@ <span class="hljs-keyword">val</span> c: <span class="hljs-type">String</span> = <span class="hljs-number">3</span>
+cmd2.sc:<span class="hljs-number">1</span>: <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">mismatch</span></span>;
+ found   : <span class="hljs-type">Int</span>(<span class="hljs-number">3</span>)
+ required: <span class="hljs-type">String</span>
+<span class="hljs-keyword">val</span> c: <span class="hljs-type">String</span> = <span class="hljs-number">3</span>
+                ^
+<span class="hljs-type">Compilation</span> <span class="hljs-type">Failed</span>
+</code></pre>
+</div></div>
+<p>您可以看到,定义一个<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>,编译器会自动推导出<code class="hljs language-scala">a</code>的类型是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的<code class="hljs language-scala"><span class="hljs-keyword">val</span> b: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span></code>的效果和<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生.</p>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
