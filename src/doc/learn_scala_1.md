@@ -16,5 +16,5 @@ String b = "string";
 
 ## 类型
 
-![image](/Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/tumblr_lylhmlhD061qd12yo.png)
+![image](images/tumblr_lylhmlhD061qd12yo.png)
 
