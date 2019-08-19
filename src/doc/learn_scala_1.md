@@ -45,5 +45,37 @@ val c: String = 3
 Compilation Failed
 ```
 
-您可以看到,定义一个`val a = 3`,编译器会自动推导出`a`的类型是`Int`,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的`val b: Int = 3`的效果和`val a = 3`效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生. 
+您可以看到,定义一个`val a = 3`,编译器会自动推导出`a`的类型是`Int`,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的`val b: Int = 3`的效果和`val a = 3`效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生.  
 
+## 表达式
+
+如您所见,Scala中的`val`可以在Java中找到一个大致对应的关键词`final`,但是在实际工作经验中,Scala中的`val`出现的频率要远高于Java中的`final`.为什么会这样?这里就要提到一个概念叫表达式([Expression](https://en.wikipedia.org/wiki/Expression_(computer_science))). 在Java里,基础的[数学运算](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/expressions.html)是表达式,[lambda表达式](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)是表达式.还有什么呢?好像没有了.
+
+在Scala里,情况就不太一样了,所有代码都会是表达式.举个例子,假设我们在没有充分利用Scala表达式特性的情况下想要根据不同的网络环境定义不一样的域名,可以这样写
+
+```scala
+  var urlString: String = null
+  val hostName = InetAddress.getLocalHost.getHostName
+  if (isInnerHost(hostName)) {
+    urlString = "http://inner.host"
+  } else {
+    urlString = "http://outter.host"
+  }
+```
+
+这段代码应该熟悉Java的人阅读起来都不会有什么困难,定义一个变量`urlString`,如果网络环境是内网,就把`"http://inner.host"`赋值给`urlString`,不然就将`"http://outter.host"`赋值给`urlString`.
+
+这段代码能够工作良好,不过还有一些安全隐患,那就是在`urlString`被第一次赋值后,它就没有被再一次变更的必要了,可是编译器仍然为它保留着再一次被变更的可能性.也就是说,您可能在之后的代码中因为一些误操作改变`urlString`的值,造成bug.我的一位前同事就因为类似原因造成的bug排查不出来,查了一整天,几近崩溃.(当然,这和他变量名习惯起a1,a2...的恶习也分不开).
+
+那么有什么办法能让`urlString`被赋上需要的值,又能让它在赋值后保持不变,避免被误操作修改呢?我们来看一个充分利用了Scala表达式特性的版本
+
+```scala
+val hostName = InetAddress.getLocalHost.getHostName
+val urlString = if (isInnerHost(hostName)) {
+  "http://inner.host"
+} else {
+  "http://outter.host"
+}
+```
+
+`"http://inner.host"`是表达式,`"http://outter.host"`是表达式,`if(...) {...}else{...}`也是表达式,三个表达式一组合,我们就获得了我们需要的`urlString`,并且它是一个值而非变量,也就是说我们可以把它放心暴露在命名空间中而不用担心它被变更了.
