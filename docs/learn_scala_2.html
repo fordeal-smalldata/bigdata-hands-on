@@ -90,7 +90,7 @@ res1: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
 </div></div>
 <p>和简化的写法相比,上面代码中的<code class="hljs language-scala">: <span class="hljs-type">Int</span></code>定义了返回值的类型,花括号中包含了函数的所有类型,其中最后一行(这个例子里正好只有一行)表达式的值表示函数的返回值.在编写复杂函数的时候,建议先把返回值类型写明,这样实现逻辑的时候编译器就能帮你排错啦.</p>
 <h3 id="关键词return通常是是不需要的" class="a_section" data-magellan-target="关键词return通常是是不需要的">关键词<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>通常是是不需要的<a class="a_hlink" href="#关键词return通常是是不需要的"></a></h3>
-<p>很多语言都使用<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>关键词表示函数的返回值,出于照顾群众习惯的考虑,Scala也保留了这个关键词.但是,这通常是不必要的比如像下面这样定义一个函数,功能和上面两个版本一样,但是编译器会给出一个<code class="hljs language-scala"><span class="hljs-type">Warning</span>: <span class="hljs-type">Return</span> keyword is redundant</code>.</p>
+<p>很多语言都使用<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>关键词表示函数的返回值,出于照顾群众习惯的考虑,Scala也保留了这个关键词.但是,这通常是不必要的.比如像下面这样定义一个函数,功能和上面两个版本一样,但是编译器会给出一个<code class="hljs language-scala"><span class="hljs-type">Warning</span>: <span class="hljs-type">Return</span> keyword is redundant</code>.</p>
 <div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
 <pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = {
     <span class="hljs-keyword">return</span> a + b <span class="hljs-comment">// Return keyword is redundant</span>
@@ -117,7 +117,94 @@ res1: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
 </code></pre>
 </div></div>
 </div></div>
+<h3 id="高阶函数" class="a_section" data-magellan-target="高阶函数">高阶函数<a class="a_hlink" href="#高阶函数"></a></h3>
+<p>在Scala里,函数可以作为另一个函数的参数使用,在下方的例子中,<code class="hljs language-scala">callFunc</code>被称为<a href="https://zh.wikipedia.org/wiki/%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0">高阶函数</a>.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">square</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = x * x
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cube</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = x * x * x
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">callFunc</span></span>(x: <span class="hljs-type">Int</span>, func: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Int</span>) = func(x)
+</code></pre>
+</div></div>
+<p>我们在Ammonite中操作试试</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  ~ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">square</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = x * x
+defined function square
+
+renkai-renkai@   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cube</span></span>(x: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = x * x * x
+defined function cube
+
+renkai-renkai@   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">callFunc</span></span>(x: <span class="hljs-type">Int</span>, func: <span class="hljs-type">Int</span> =&gt; <span class="hljs-type">Int</span>) = func(x)
+defined function callFunc
+
+renkai-renkai@   callFunc(<span class="hljs-number">3</span>,square)
+res3: <span class="hljs-type">Int</span> = <span class="hljs-number">9</span>
+
+renkai-renkai@   callFunc(<span class="hljs-number">3</span>,cube)
+res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
+</code></pre>
+</div></div>
+<p>高阶函数在Scala的标准库中广泛使用,为我们编程带来了很多便利,下一节我们学习Scala内置数据结构的时候就能看到.</p>
 <h2 id="数据结构" class="a_section" data-magellan-target="数据结构">数据结构<a class="a_hlink" href="#数据结构"></a></h2>
+<h3 id="array" class="a_section" data-magellan-target="array"><code class="hljs language-scala"><span class="hljs-type">Array</span></code><a class="a_hlink" href="#array"></a></h3>
+<p>Scala的<code class="hljs language-scala"><span class="hljs-type">Array</span></code>和Java中的<code class="hljs language-scala"><span class="hljs-type">Array</span></code>底层实现是一样的,但是增加了很多便利的接口可以操作或者生成数据</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> arr = <span class="hljs-type">Array</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-comment">// arr: Array[Int] = Array(1, 2, 3)</span>
+  arr(<span class="hljs-number">0</span>) <span class="hljs-comment">// res1: Int = 1</span>
+  arr(<span class="hljs-number">0</span>) = <span class="hljs-number">3</span>
+  arr(<span class="hljs-number">0</span>) <span class="hljs-comment">// res3: Int = 3</span>
+  arr.mkString(<span class="hljs-string">","</span>) <span class="hljs-comment">// res4: String = "3,2,3"</span>
+</code></pre>
+</div></div>
+<p>上方代码展示的是一些最简单的操作,更多操作可以查看<a href="https://www.scala-lang.org/api/2.13.0/scala/Array.html">官网文档</a>进行学习</p>
+<h3 id="vector" class="a_section" data-magellan-target="vector"><code class="hljs language-scala"><span class="hljs-type">Vector</span></code><a class="a_hlink" href="#vector"></a></h3>
+<p><code class="hljs language-scala"><span class="hljs-type">Vector</span></code>是Scala实现的一个高性能数据结构,能在接近常数复杂度的时间内实现序列的拼接,随机获取等.需要注意的是,这个数据结构是不可变(<a href="https://docs.scala-lang.org/overviews/collections-2.13/overview.html">Immutable</a>)的,一个<code class="hljs language-scala"><span class="hljs-type">Vector</span></code>生成后就不能改变它的值.关于不可变数据结构的进一步了解可以参考<a href="https://hackernoon.com/how-immutable-data-structures-e-g-immutable-js-are-optimized-using-structural-sharing-e4424a866d56">这篇</a>和<a href="https://zhuanlan.zhihu.com/p/27133830">这篇</a>文章,很多同学可能不习惯使用不可变数据结构进行编程,不要担心,当您习惯用表达式进行编程时也会同时习惯不可变数据结构.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> vec1 = <span class="hljs-type">Vector</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) ++ <span class="hljs-type">Vector</span>(<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>)
+  <span class="hljs-comment">//vec1: Vector[Int] = Vector(1, 2, 3, 4, 5, 6)</span>
+  <span class="hljs-keyword">val</span> vec2 = vec1 :+ <span class="hljs-number">7</span>
+  <span class="hljs-comment">//vec2: Vector[Int] = Vector(1, 2, 3, 4, 5, 6, 7)</span>
+  vec2(<span class="hljs-number">0</span>)
+  <span class="hljs-comment">//res4: Int = 1</span>
+  <span class="hljs-keyword">val</span> vec3 = <span class="hljs-number">0</span> +: vec2
+  <span class="hljs-comment">//vec3: Vector[Int] = Vector(0, 1, 2, 3, 4, 5, 6, 7)</span>
+  vec3(<span class="hljs-number">0</span>)
+  <span class="hljs-comment">//res3: Int = 0</span>
+</code></pre>
+</div></div>
+<p>更多操作见<a href="https://www.scala-lang.org/api/2.13.0/scala/collection/immutable/Vector.html">官方文档</a></p>
+<h3 id="seq" class="a_section" data-magellan-target="seq"><code class="hljs language-scala"><span class="hljs-type">Seq</span></code><a class="a_hlink" href="#seq"></a></h3>
+<p><code class="hljs language-scala"><span class="hljs-type">Seq</span></code>是Scala实现的一个序列类型接口,<code class="hljs language-scala"><span class="hljs-type">Array</span></code>和<code class="hljs language-scala"><span class="hljs-type">Vector</span></code>都实现了<code class="hljs language-scala"><span class="hljs-type">Seq</span></code>接口,在函数定义中把参数或者返回值类型设置为<code class="hljs language-scala"><span class="hljs-type">Seq</span></code>,然后用<code class="hljs language-scala"><span class="hljs-type">Array</span></code>或者<code class="hljs language-scala"><span class="hljs-type">Vector</span></code>实现,方便以后有重构需求的时候不用变更函数签名.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> arrSeq: <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">Array</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-keyword">val</span> vecSeq: <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">Vector</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-keyword">val</span> listSeq: <span class="hljs-type">Seq</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-comment">//编译通过</span>
+</code></pre>
+</div></div>
+<h3 id="set" class="a_section" data-magellan-target="set"><code class="hljs language-scala"><span class="hljs-type">Set</span></code><a class="a_hlink" href="#set"></a></h3>
+<p><code class="hljs language-scala"><span class="hljs-type">Set</span></code>应该大家都很熟了,是保证内部每个元素都唯一的集合,下方展示一些常用操作</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> set1 = <span class="hljs-type">Set</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-comment">// set1: Set[Int] = Set(1, 2, 3)</span>
+  <span class="hljs-keyword">val</span> set2 = set1 + <span class="hljs-number">1</span>
+  <span class="hljs-comment">// set2: Set[Int] = Set(1, 2, 3)</span>
+  <span class="hljs-keyword">val</span> set3 = set2 + <span class="hljs-number">4</span>
+  <span class="hljs-comment">// set3: Set[Int] = Set(1, 2, 3, 4)</span>
+  <span class="hljs-keyword">val</span> set4 = <span class="hljs-type">Set</span>(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)
+  <span class="hljs-comment">// set4: Set[Int] = Set(3, 4, 5)</span>
+  <span class="hljs-keyword">val</span> set5 = set1.intersect(set4)
+  <span class="hljs-comment">// set5: Set[Int] = Set(3)</span>
+  <span class="hljs-keyword">val</span> set6 = set1.union(set4)
+  <span class="hljs-comment">// set6: Set[Int] = HashSet(5, 1, 2, 3, 4)</span>
+</code></pre>
+</div></div>
+<h3 id="map" class="a_section" data-magellan-target="map"><code class="hljs language-scala"><span class="hljs-type">Map</span></code><a class="a_hlink" href="#map"></a></h3>
+<h3 id="tuple" class="a_section" data-magellan-target="tuple"><code class="hljs language-scala"><span class="hljs-type">Tuple</span></code><a class="a_hlink" href="#tuple"></a></h3>
 <h2 id="billion-dollar-mistake" class="a_section" data-magellan-target="billion-dollar-mistake">Billion Dollar Mistake<a class="a_hlink" href="#billion-dollar-mistake"></a></h2>
 
                  
@@ -208,6 +295,15 @@ res1: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
       
     </li>
   
+  
+  
+    <li>
+      
+         <a href="#高阶函数">高阶函数</a> 
+      
+      
+    </li>
+  
   </ul>
       
     </li>
@@ -218,6 +314,62 @@ res1: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
       
          <a href="#数据结构">数据结构</a> 
       
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#array">Array</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#vector">Vector</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#seq">Seq</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#set">Set</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#map">Map</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#tuple">Tuple</a> 
+      
+      
+    </li>
+  
+  </ul>
       
     </li>
   

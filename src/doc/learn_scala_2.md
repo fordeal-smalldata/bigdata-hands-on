@@ -35,7 +35,7 @@ res1: Int = 2
 
 ### 关键词`return`通常是是不需要的
 
-很多语言都使用`return`关键词表示函数的返回值,出于照顾群众习惯的考虑,Scala也保留了这个关键词.但是,这通常是不必要的比如像下面这样定义一个函数,功能和上面两个版本一样,但是编译器会给出一个`Warning: Return keyword is redundant`.
+很多语言都使用`return`关键词表示函数的返回值,出于照顾群众习惯的考虑,Scala也保留了这个关键词.但是,这通常是不必要的.比如像下面这样定义一个函数,功能和上面两个版本一样,但是编译器会给出一个`Warning: Return keyword is redundant`.
 
 ```scala
   def add(a: Int, b: Int): Int = {
@@ -60,8 +60,113 @@ res1: Int = 2
   }
 ```
 
+### 高阶函数
 
+在Scala里,函数可以作为另一个函数的参数使用,在下方的例子中,`callFunc`被称为[高阶函数](https://zh.wikipedia.org/wiki/%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0).
+
+```scala
+  def square(x: Int): Int = x * x
+  def cube(x: Int): Int = x * x * x
+  def callFunc(x: Int, func: Int => Int) = func(x)
+```
+
+我们在Ammonite中操作试试
+
+```scala
+➜  ~ amm
+Loading...
+Welcome to the Ammonite Repl 1.6.8
+(Scala 2.13.0 Java 1.8.0_181)
+If you like Ammonite, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@   def square(x: Int): Int = x * x
+defined function square
+
+renkai-renkai@   def cube(x: Int): Int = x * x * x
+defined function cube
+
+renkai-renkai@   def callFunc(x: Int, func: Int => Int) = func(x)
+defined function callFunc
+
+renkai-renkai@   callFunc(3,square)
+res3: Int = 9
+
+renkai-renkai@   callFunc(3,cube)
+res4: Int = 27
+```
+
+高阶函数在Scala的标准库中广泛使用,为我们编程带来了很多便利,下一节我们学习Scala内置数据结构的时候就能看到.
 
 ## 数据结构
+
+### `Array`
+
+Scala的`Array`和Java中的`Array`底层实现是一样的,但是增加了很多便利的接口可以操作或者生成数据
+
+```scala
+  val arr = Array(1, 2, 3) // arr: Array[Int] = Array(1, 2, 3)
+  arr(0) // res1: Int = 1
+  arr(0) = 3
+  arr(0) // res3: Int = 3
+  arr.mkString(",") // res4: String = "3,2,3"
+```
+
+上方代码展示的是一些最简单的操作,更多操作可以查看[官网文档](https://www.scala-lang.org/api/2.13.0/scala/Array.html)进行学习
+
+### `Vector`
+
+`Vector`是Scala实现的一个高性能数据结构,能在接近常数复杂度的时间内实现序列的拼接,随机获取等.需要注意的是,这个数据结构是不可变([Immutable](https://docs.scala-lang.org/overviews/collections-2.13/overview.html))的,一个`Vector`生成后就不能改变它的值.关于不可变数据结构的进一步了解可以参考[这篇](https://hackernoon.com/how-immutable-data-structures-e-g-immutable-js-are-optimized-using-structural-sharing-e4424a866d56)和[这篇](https://zhuanlan.zhihu.com/p/27133830)文章,很多同学可能不习惯使用不可变数据结构进行编程,不要担心,当您习惯用表达式进行编程时也会同时习惯不可变数据结构.
+
+```scala
+  val vec1 = Vector(1, 2, 3) ++ Vector(4, 5, 6)
+  //vec1: Vector[Int] = Vector(1, 2, 3, 4, 5, 6)
+  val vec2 = vec1 :+ 7
+  //vec2: Vector[Int] = Vector(1, 2, 3, 4, 5, 6, 7)
+  vec2(0)
+  //res4: Int = 1
+  val vec3 = 0 +: vec2
+  //vec3: Vector[Int] = Vector(0, 1, 2, 3, 4, 5, 6, 7)
+  vec3(0)
+  //res3: Int = 0
+```
+
+更多操作见[官方文档](https://www.scala-lang.org/api/2.13.0/scala/collection/immutable/Vector.html)
+
+### `Seq`
+
+`Seq`是Scala实现的一个序列类型接口,`Array`和`Vector`都实现了`Seq`接口,在函数定义中把参数或者返回值类型设置为`Seq`,然后用`Array`或者`Vector`实现,方便以后有重构需求的时候不用变更函数签名.
+
+```scala
+  val arrSeq: Seq[Int] = Array(1, 2, 3)
+  val vecSeq: Seq[Int] = Vector(1, 2, 3)
+  val listSeq: Seq[Int] = List(1, 2, 3)
+  //编译通过
+```
+
+### `Set`
+
+`Set`应该大家都很熟了,是保证内部每个元素都唯一的集合,下方展示一些常用操作
+
+```scala
+  val set1 = Set(1, 2, 3)
+  // set1: Set[Int] = Set(1, 2, 3)
+  val set2 = set1 + 1
+  // set2: Set[Int] = Set(1, 2, 3)
+  val set3 = set2 + 4
+  // set3: Set[Int] = Set(1, 2, 3, 4)
+  val set4 = Set(3, 4, 5)
+  // set4: Set[Int] = Set(3, 4, 5)
+  val set5 = set1.intersect(set4)
+  // set5: Set[Int] = Set(3)
+  val set6 = set1.union(set4)
+  // set6: Set[Int] = HashSet(5, 1, 2, 3, 4)
+```
+
+### `Map`
+
+
+
+### `Tuple`
+
+
 
 ## Billion Dollar Mistake
