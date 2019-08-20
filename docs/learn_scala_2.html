@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scala入门(二)</title>
+    <link rel="stylesheet" href="theme/css/foundation.min.css">
+    <link rel="stylesheet" href="theme/css/app.css">
+    
+     <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
+    
+     <link rel="prev" href="learn_scala_1.html"  title="Scala入门(一)"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
+  </head>
+  <body>
+    <div class="expanded row">
+      <div class="small-12 medium-12 large-12 columns align-self-top">
+        <div class="row">
+          
+          <header class="large-12 columns align-self-top a_header">
+            <div class="row">
+              <div class="large-12 columns a_limited top-bar">
+                <div class="top-bar-left">
+                  <p>Fordeal数据平台 技术讲义</p>
+
+                </div>
+                <div class="top-bar-right align-right row">
+                  
+                  
+                    <form action="site-search.html" method="get" class="align-right a_search">
+                      <input name="q" type="search"  placeholder="Search
+" >
+                      <button><img alt="&#1F50D;" src="theme/images/search.svg" /></button>
+                    </form>
+                  
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <div class="small-12 medium-12 large-12 columns align-self-top a_limited a_main">
+            <div class="row">
+              
+              <main class="columns large-order-2 sections" id="_sections">
+                 
+  <ul class="menu align-right simple a_navbar a_navbar_top">
+    
+      
+        <li><a href="learn_scala_1.html"  title="Scala入门(一)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
+    
+      
+        <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
+      
+    
+  </ul>
+ 
+                
+                <h1 id="scala入门二" class="a_section" data-magellan-target="scala入门二">Scala入门(二)<a class="a_hlink" href="#scala入门二"></a></h1>
+<h2 id="函数" class="a_section" data-magellan-target="函数">函数<a class="a_hlink" href="#函数"></a></h2>
+<p>在编程中,为了能够做出更好的抽象,我们往往会把代码块整理成函数,这里介绍下在Scala中怎样定义一个函数</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a:<span class="hljs-type">Int</span>,b:<span class="hljs-type">Int</span>) = a + b
+</code></pre>
+</div></div>
+<p>这是一个简化的定义,我们没有给出返回值的类型,编译器自动为我们做了这件事😄,现在我们试试在Ammonite中试一试这个函数</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  ~ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-renkai@ <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a:<span class="hljs-type">Int</span>,b:<span class="hljs-type">Int</span>) = a + b
+defined function add
+
+renkai-renkai@ add(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)
+res1: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
+</code></pre>
+</div></div>
+<p>为了了解函数定义更多一点,我们再来看下<code class="hljs language-scala">add</code>的完整写法</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = {
+    a + b
+  }
+</code></pre>
+</div></div>
+<p>和简化的写法相比,上面代码中的<code class="hljs language-scala">: <span class="hljs-type">Int</span></code>定义了返回值的类型,花括号中包含了函数的所有类型,其中最后一行(这个例子里正好只有一行)表达式的值表示函数的返回值.在编写复杂函数的时候,建议先把返回值类型写明,这样实现逻辑的时候编译器就能帮你排错啦.</p>
+<h3 id="关键词return通常是是不需要的" class="a_section" data-magellan-target="关键词return通常是是不需要的">关键词<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>通常是是不需要的<a class="a_hlink" href="#关键词return通常是是不需要的"></a></h3>
+<p>很多语言都使用<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>关键词表示函数的返回值,出于照顾群众习惯的考虑,Scala也保留了这个关键词.但是,这通常是不必要的比如像下面这样定义一个函数,功能和上面两个版本一样,但是编译器会给出一个<code class="hljs language-scala"><span class="hljs-type">Warning</span>: <span class="hljs-type">Return</span> keyword is redundant</code>.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">add</span></span>(a: <span class="hljs-type">Int</span>, b: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> = {
+    <span class="hljs-keyword">return</span> a + b <span class="hljs-comment">// Return keyword is redundant</span>
+  }
+</code></pre>
+</div></div>
+<p>定义函数的时候,如果感觉确实离不开<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>,也不要气馁,用就用吧.但是同时记得考虑下是不是能通过充分利用表达式的特性把<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>去掉.下面是比较使用和不使用<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>关键词来实现函数分支操作的一个例子.</p>
+<ul class="tabs" data-tabs id="_id0"><li class="tabs-title is-active"><a href="#_id1" aria-selected="true">使用return</a></li><li class="tabs-title"><a href="#_id2">不使用return</a></li></ul>
+<div class="tabs-content" data-tabs-content="_id0"><div class="tabs-panel is-active" id="_id1">
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">concat</span></span>(a: <span class="hljs-type">String</span>, b: <span class="hljs-type">String</span>): <span class="hljs-type">String</span> = {
+    <span class="hljs-keyword">if</span> (a == <span class="hljs-literal">null</span> || b == <span class="hljs-literal">null</span>)
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">return</span> a + b
+  }
+</code></pre>
+</div></div>
+</div><div class="tabs-panel" id="_id2">
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">concat</span></span>(a: <span class="hljs-type">String</span>, b: <span class="hljs-type">String</span>): <span class="hljs-type">String</span> = {
+    <span class="hljs-keyword">if</span> (a == <span class="hljs-literal">null</span> || b == <span class="hljs-literal">null</span>) <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">else</span> a + b
+  }
+</code></pre>
+</div></div>
+</div></div>
+<h2 id="数据结构" class="a_section" data-magellan-target="数据结构">数据结构<a class="a_hlink" href="#数据结构"></a></h2>
+<h2 id="billion-dollar-mistake" class="a_section" data-magellan-target="billion-dollar-mistake">Billion Dollar Mistake<a class="a_hlink" href="#billion-dollar-mistake"></a></h2>
+
+                 
+  <ul class="menu align-right simple a_navbar a_navbar_bottom">
+    
+      
+        <li><a href="learn_scala_1.html"  title="Scala入门(一)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
+    
+      
+        <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
+      
+    
+  </ul>
+ 
+              </main>
+              
+              
+                <div data-sticky-container class="small-12 medium-12 large-2 large-order-1 columns a_sitenav_container">
+                  <nav class="a_sitenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                    
+                    <ul>
+                       
+  <li >
+    
+      
+        <a href="index.html">Scala 语言入门:材料准备</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="learn_scala_1.html">Scala入门(一)</a>
+      
+    
+    
+  </li>
+  
+  <li  class="a_thispage" >
+    
+      
+        <a href="learn_scala_2.html">Scala入门(二)</a>
+      
+    
+    
+  </li>
+ 
+                    </ul>
+                    
+                    
+                  </nav>
+                </div>
+              
+              
+              
+                <div class="small-12 medium-12 large-2 large-order-3 columns a_show-for-xlarge" data-sticky-container>
+                  <nav class="a_pagenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                     <header><p>On This Page</p>
+</header> 
+                    <ul class="vertical menu" data-magellan>
+                       
+  
+    <li>
+      
+         <a href="#scala入门二">Scala入门(二)</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#函数">函数</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#关键词return通常是是不需要的">关键词return通常是是不需要的</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#数据结构">数据结构</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#billion-dollar-mistake">Billion Dollar Mistake</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+ 
+                    </ul>
+                  </nav>
+                </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="small-12 medium-12 large-12 columns align-self-bottom a_footer">
+        <div class="row">
+          <div class="small-12 medium-12 large-12 columns top-bar">
+            <div class="top-bar-left">
+              
+            </div>
+            <div class="top-bar-right">
+              <p>Generated with <a href="https://github.com/szeiger/ornate">Ornate</a>.</p>
+
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script src="theme/js/jquery.min.js"></script>
+    <script src="theme/js/what-input.min.js"></script>
+    <script src="theme/js/foundation.min.js"></script>
+    
+    <script src="theme/js/app.js"></script>
+    
+  </body>
+</html>
