@@ -79,3 +79,14 @@ val urlString = if (isInnerHost(hostName)) {
 ```
 
 `"http://inner.host"`是表达式,`"http://outter.host"`是表达式,`if(...) {...}else{...}`也是表达式,三个表达式一组合,我们就获得了我们需要的`urlString`,并且它是一个值而非变量,也就是说我们可以把它放心暴露在命名空间中而不用担心它被变更了.
+
+## 习题
+
+按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz1.scala`,更改文件中的`???`.在项目根目录下执行`./gradlew run --args='quiz.Quiz1'`,获得以下输出说明习题完成.
+
+```
+1 + 1 = 2
+小目标达成
+```
+
+参考答案在`src/main/scala/answer/Answer1.scala`中
