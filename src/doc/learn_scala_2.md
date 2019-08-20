@@ -186,7 +186,29 @@ Scala的`Array`和Java中的`Array`底层实现是一样的,但是增加了很�
 
 ### `Tuple`
 
+当您需要定义一个有多个返回值的函数时,`Tuple`能帮您大幅简化代码量,比如说下方的例子里`currentYearMonthDay`定义了一个返回值为`Tuple3[Int,Month,Int]`的函数.如果您有需要的话,可以无痛定义返回值在`Tuple2`到`Tuple22`间的各种函数,详细介绍可以看[官网文档](https://docs.scala-lang.org/tour/tuples.html).需要注意的是,`Tuple`中的每个元素类型都是独立的,建议在定义函数一开始就设计好每个元素的类型以充分使用编译器的排错能力
 
+```scala
+  import java.time._
+  def currentYearMonthDay(): (Int, Month, Int) = {
+    val now = LocalDateTime.now()
+    (now.getYear, now.getMonth, now.getDayOfMonth)
+  }
+
+  val yearMonthDay = currentYearMonthDay()
+  // yearMonthDay: (Int, Month, Int) = (2019, AUGUST, 20)
+  yearMonthDay._1
+  // res3: Int = 2019
+  yearMonthDay._2
+  // res4: Month = AUGUST
+  yearMonthDay._3
+  // res5: Int = 20
+
+  val (year, month, day) = yearMonthDay
+  //year: Int = 2019
+  //month: Month = AUGUST
+  //day: Int = 20
+```
 
 ### 通用操作
 

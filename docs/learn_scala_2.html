@@ -224,6 +224,29 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
 </div></div>
 <p>这里需要注意的是,类似<code class="hljs language-scala">map3(<span class="hljs-number">3</span>)</code>这样的操作在没有相应值的时候会抛异常,而不是返回一个<code class="hljs language-scala"><span class="hljs-literal">null</span></code>,所以一般不推荐使用,推荐使用的方法是<code class="hljs language-scala">map3.get(<span class="hljs-number">3</span>)</code>,<code class="hljs language-scala">get</code>方法不会直接返回一个<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,而是返回一个<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>,这里的设计思想我们在下一节介绍</p>
 <h3 id="tuple" class="a_section" data-magellan-target="tuple"><code class="hljs language-scala"><span class="hljs-type">Tuple</span></code><a class="a_hlink" href="#tuple"></a></h3>
+<p>当您需要定义一个有多个返回值的函数时,<code class="hljs language-scala"><span class="hljs-type">Tuple</span></code>能帮您大幅简化代码量,比如说下方的例子里<code class="hljs language-scala">currentYearMonthDay</code>定义了一个返回值为<code class="hljs language-scala"><span class="hljs-type">Tuple3</span>[<span class="hljs-type">Int</span>,<span class="hljs-type">Month</span>,<span class="hljs-type">Int</span>]</code>的函数.如果您有需要的话,可以无痛定义返回值在<code class="hljs language-scala"><span class="hljs-type">Tuple2</span></code>到<code class="hljs language-scala"><span class="hljs-type">Tuple22</span></code>间的各种函数,详细介绍可以看<a href="https://docs.scala-lang.org/tour/tuples.html">官网文档</a>.需要注意的是,<code class="hljs language-scala"><span class="hljs-type">Tuple</span></code>中的每个元素类型都是独立的,建议在定义函数一开始就设计好每个元素的类型以充分使用编译器的排错能力</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">import</span> java.time._
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">currentYearMonthDay</span></span>(): (<span class="hljs-type">Int</span>, <span class="hljs-type">Month</span>, <span class="hljs-type">Int</span>) = {
+    <span class="hljs-keyword">val</span> now = <span class="hljs-type">LocalDateTime</span>.now()
+    (now.getYear, now.getMonth, now.getDayOfMonth)
+  }
+
+  <span class="hljs-keyword">val</span> yearMonthDay = currentYearMonthDay()
+  <span class="hljs-comment">// yearMonthDay: (Int, Month, Int) = (2019, AUGUST, 20)</span>
+  yearMonthDay._1
+  <span class="hljs-comment">// res3: Int = 2019</span>
+  yearMonthDay._2
+  <span class="hljs-comment">// res4: Month = AUGUST</span>
+  yearMonthDay._3
+  <span class="hljs-comment">// res5: Int = 20</span>
+
+  <span class="hljs-keyword">val</span> (year, month, day) = yearMonthDay
+  <span class="hljs-comment">//year: Int = 2019</span>
+  <span class="hljs-comment">//month: Month = AUGUST</span>
+  <span class="hljs-comment">//day: Int = 20</span>
+</code></pre>
+</div></div>
 <h3 id="通用操作" class="a_section" data-magellan-target="通用操作">通用操作<a class="a_hlink" href="#通用操作"></a></h3>
 <h2 id="billion-dollar-mistake" class="a_section" data-magellan-target="billion-dollar-mistake">Billion Dollar Mistake<a class="a_hlink" href="#billion-dollar-mistake"></a></h2>
 
