@@ -163,9 +163,32 @@ Scala的`Array`和Java中的`Array`底层实现是一样的,但是增加了很�
 
 ### `Map`
 
+`Map`是由键值对组成的集合,它保证内部每个键都是唯一的,下方展示一些常用的操作
 
+```scala
+  val map1 = Map(1 -> 2, 3 -> 4, 5 -> 6)
+  // map1: Map[Int, Int] = Map(1 -> 2, 3 -> 4, 5 -> 6)
+  val map2 = map1 + (1 -> 3)
+  // map2: Map[Int, Int] = Map(1 -> 3, 3 -> 4, 5 -> 6)
+  val map3 = map2 - 1
+  // map3: Map[Int, Int] = Map(3 -> 4, 5 -> 6)
+  map3(3)
+  // res17: Int = 4
+  map3.get(3)
+  // res18: Option[Int] = Some(4)
+  map3.get(8)
+  // res19: Option[Int] = None
+	map3.getOrElse(8,666)
+	// res20: Int = 666
+```
+
+这里需要注意的是,类似`map3(3)`这样的操作在没有相应值的时候会抛异常,而不是返回一个`null`,所以一般不推荐使用,推荐使用的方法是`map3.get(3)`,`get`方法不会直接返回一个`Int`,而是返回一个`Option[Int]`,这里的设计思想我们在下一节介绍
 
 ### `Tuple`
+
+
+
+### 通用操作
 
 
 

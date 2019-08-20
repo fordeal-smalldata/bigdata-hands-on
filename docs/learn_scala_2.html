@@ -204,7 +204,27 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
 </code></pre>
 </div></div>
 <h3 id="map" class="a_section" data-magellan-target="map"><code class="hljs language-scala"><span class="hljs-type">Map</span></code><a class="a_hlink" href="#map"></a></h3>
+<p><code class="hljs language-scala"><span class="hljs-type">Map</span></code>是由键值对组成的集合,它保证内部每个键都是唯一的,下方展示一些常用的操作</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> map1 = <span class="hljs-type">Map</span>(<span class="hljs-number">1</span> -&gt; <span class="hljs-number">2</span>, <span class="hljs-number">3</span> -&gt; <span class="hljs-number">4</span>, <span class="hljs-number">5</span> -&gt; <span class="hljs-number">6</span>)
+  <span class="hljs-comment">// map1: Map[Int, Int] = Map(1 -&gt; 2, 3 -&gt; 4, 5 -&gt; 6)</span>
+  <span class="hljs-keyword">val</span> map2 = map1 + (<span class="hljs-number">1</span> -&gt; <span class="hljs-number">3</span>)
+  <span class="hljs-comment">// map2: Map[Int, Int] = Map(1 -&gt; 3, 3 -&gt; 4, 5 -&gt; 6)</span>
+  <span class="hljs-keyword">val</span> map3 = map2 - <span class="hljs-number">1</span>
+  <span class="hljs-comment">// map3: Map[Int, Int] = Map(3 -&gt; 4, 5 -&gt; 6)</span>
+  map3(<span class="hljs-number">3</span>)
+  <span class="hljs-comment">// res17: Int = 4</span>
+  map3.get(<span class="hljs-number">3</span>)
+  <span class="hljs-comment">// res18: Option[Int] = Some(4)</span>
+  map3.get(<span class="hljs-number">8</span>)
+  <span class="hljs-comment">// res19: Option[Int] = None</span>
+	map3.getOrElse(<span class="hljs-number">8</span>,<span class="hljs-number">666</span>)
+	<span class="hljs-comment">// res20: Int = 666</span>
+</code></pre>
+</div></div>
+<p>这里需要注意的是,类似<code class="hljs language-scala">map3(<span class="hljs-number">3</span>)</code>这样的操作在没有相应值的时候会抛异常,而不是返回一个<code class="hljs language-scala"><span class="hljs-literal">null</span></code>,所以一般不推荐使用,推荐使用的方法是<code class="hljs language-scala">map3.get(<span class="hljs-number">3</span>)</code>,<code class="hljs language-scala">get</code>方法不会直接返回一个<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,而是返回一个<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>,这里的设计思想我们在下一节介绍</p>
 <h3 id="tuple" class="a_section" data-magellan-target="tuple"><code class="hljs language-scala"><span class="hljs-type">Tuple</span></code><a class="a_hlink" href="#tuple"></a></h3>
+<h3 id="通用操作" class="a_section" data-magellan-target="通用操作">通用操作<a class="a_hlink" href="#通用操作"></a></h3>
 <h2 id="billion-dollar-mistake" class="a_section" data-magellan-target="billion-dollar-mistake">Billion Dollar Mistake<a class="a_hlink" href="#billion-dollar-mistake"></a></h2>
 
                  
@@ -365,6 +385,15 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
     <li>
       
          <a href="#tuple">Tuple</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#通用操作">通用操作</a> 
       
       
     </li>
