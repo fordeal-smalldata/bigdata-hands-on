@@ -269,3 +269,9 @@ Scala标准库中有许多通用的操作,`Array`,`Vector`,`Set`,`Map`等等都�
 Spark也好,Flink也好,它们的API几乎就是个大号的Scala标准库,也就是在标准库的基础上帮您做了一些分布式,高并发,异步处理,背压之类的工作.对于用户而言,用起来是差不多的,所以掌握好标准库对您之后操作那些设施很有帮助,建议多多练习.
 
 ## Billion Dollar Mistake
+
+
+
+## 习题
+
+发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib
