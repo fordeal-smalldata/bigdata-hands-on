@@ -270,7 +270,121 @@ Spark也好,Flink也好,它们的API几乎就是个大号的Scala标准库,也�
 
 ## Billion Dollar Mistake
 
+如果您不知道什么是Billion Dollar Mistake,详细的来龙去脉可以看看这篇[InfoQ文章](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/).[Tony Hoare](https://zh.wikipedia.org/wiki/%E6%9D%B1%E5%B0%BC%C2%B7%E9%9C%8D%E7%88%BE)在1965年将空指针功能加入了他所设计的ALGOL W编程语言中,"只是因为这样比较好实现".这一行为引起了C/C++/Java等等等等语言的效仿.Tony Hoare认为他所设计的空指针功能从那时开始到现在,至少为人民群众带来了十亿美金的损失(主要是运行时的进程崩溃带来的),进行了忏悔.
 
+忏悔都忏悔了,损失已经造成了,那我们要怎样带着历史包袱前进,来应对空指针可能带来的损失呢?Scala给我们提供了一个工具叫`Option`.
+
+举个例子,在Java中您想获得一个字符串的长度,可以这么定义一个函数
+
+```java
+    public static int lenOfString(String str) {
+        return str.length();
+    } // 版本1
+```
+
+一些比较年轻,比较简单,有时还很幼稚的小朋友可能觉得这个定义没什么问题,可一到实际试用中就会出事
+
+比如当一个空值传入的时候
+
+```java
+        String a = null;
+        System.out.println("length of a: " + lenOfString(a));
+        //Exception in thread "main" java.lang.NullPointerException
+        //at NullSample.lenOfString(NullSample.java:5)
+        //at NullSample.main(NullSample.java:15)
+```
+
+为了避免这种情况,一些长者会这么写
+
+```java
+    public static int lenOfNullableString(String str) {
+        if (str == null) return 0;
+        return str.length();
+    }
+```
+
+这样确实可以避免null异常发生.可是它有一个问题,那就是它不是强制的,依据每个人的工作环境不同,没做空值检查的代码可能会获得Warning,也可能不会,(就算会有Warning,很多人也会被过多Warning伤害从而无视Warning).当项目中有稍许基础需要做空检查的时候,大部分人都能做好,可是当对空检查的需求到达几十次,几百次的时候,人就多多少少会有遗漏,那些遗漏可能带来大量的运行时损失.
+
+Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scala原创的代码中几乎总是有很好的方法避免使用`null`值,需要处理`null`值的情况主要出现在调用Java代码的情况下.如果我们用`Option(...)`包住一个`null`值,我们就会自动得到一个`None`,如果我们用`Option(...)`包住一个非`null`值,我们就会得到一个`Some(...)`
+
+```scala
+  def mockSomeJCodeMayNull(giveMeNull: Boolean) = {
+    if (giveMeNull) null else "not null"
+  }
+
+  val nullToOpt = Option(mockSomeJCodeMayNull(true))
+  // nullToOpt: Option[String] = None
+  val nonNullToOpt = Option(mockSomeJCodeMayNull(false))
+  // nonNullToOpt: Option[String] = Some("not null")
+```
+
+↑↑↑↑↑上方就是把可能为`null`的值变成`Option`的玩法啦,既然已经知道怎么把可能为`null`的值转成`Option`了,下面就展示些代码看我们怎么可以和`Option`玩耍吧.
+
+`Option`很常见的一种应用场景是处理`Map`中可能不包含相应键的情况
+
+```scala
+  val squares = Map(1 -> 1, 2 -> 4, 3 -> 9, 4 -> 16)
+  val squares2 = squares(2)
+  // squares2: Int = 4 直接取出相应值,有可能抛出NoSuchElementException,不建议使用
+  val squares5 = squares(5)
+  // java.util.NoSuchElementException: key not found: 5
+  val squares2Opt = squares.get(2)
+  // squares5Opt: Option[Int] = None 使用get方法,没有相应键的时候不是抛异常,而是返回一个None
+  val squares5Opt = squares.get(5)
+  val squares5WithDefault = squares.getOrElse(5, 25)
+  // squares5WithDefault: Int = 25 如果没有相应键,就采用我们填入的默认值,这里是25
+  // 下方可以看getOrElse具体的实现方法 ↓↓↓
+  //  def getOrElse[V1 >: V](key: K, default: => V1): V1 = get(key) match {
+  //    case Some(v) => v
+  //    case None => default
+  //  }
+```
+
+在一般集合中,我们也能用`Option`来帮忙应对它们可能没有某些符合要求的值和可能为空的情况
+
+```scala
+  val vec = Vector(1, 2, 3, 4, 5)
+  val findAOdd = vec.find(x => x % 2 != 0)
+  //findAOdd: Option[Int] = Some(1)
+  val findGt8 = vec.find(x => x > 8)
+  //findGt8: Option[Int] = None
+  val emptyVec = Vector.empty[Int]
+  val headOfVec = vec.headOption
+  //headOfVec: Option[Int] = Some(1)
+  val headOfEmptyVec = emptyVec.headOption
+  //headOfEmptyVec: Option[Int] = None
+```
+
+为什么`Option`可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为`Option[Int]`不是`Int`,`Option[String]`也不是`String`,您把`Option`中的内容取出来前,无法正确地用`Int`或`String`或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地获取Option中的值.
+
+* 给出一个默认值
+
+  ```scala
+    val noneOrElse = None.getOrElse(2)
+    // noneOrElse: Int = 2
+    val someOrElse = Some(1).getOrElse(2)
+    // someOrElse: Int = 1
+  ```
+
+* 把`Option`也当做一个集合,用集合
+
+  ```scala
+    val square10Opt = Some(10).map(x => x * x)
+    //square10Opt: Option[Int] = Some(100)
+    val intNone: Option[Int] = None
+    val squareNone = intNone.map(x => x * x)
+    //squareNone: Option[Int] = None
+    val someForeach = Some(10).foreach {
+      x => println(s"这个Option里包含了整数 $x")
+    }
+    //输出了 这个Option里包含了整数 10
+    val nonForeach = intNone.foreach {
+      x => println(s"这个Option里包含了整数 $x")
+    }
+    //什么也没输出
+  ```
+
+  
 
 ## 习题
 

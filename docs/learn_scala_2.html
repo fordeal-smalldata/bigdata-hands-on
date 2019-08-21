@@ -301,6 +301,112 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
 </div></div>
 <p>Spark也好,Flink也好,它们的API几乎就是个大号的Scala标准库,也就是在标准库的基础上帮您做了一些分布式,高并发,异步处理,背压之类的工作.对于用户而言,用起来是差不多的,所以掌握好标准库对您之后操作那些设施很有帮助,建议多多练习.</p>
 <h2 id="billion-dollar-mistake" class="a_section" data-magellan-target="billion-dollar-mistake">Billion Dollar Mistake<a class="a_hlink" href="#billion-dollar-mistake"></a></h2>
+<p>如果您不知道什么是Billion Dollar Mistake,详细的来龙去脉可以看看这篇<a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/">InfoQ文章</a>.<a href="https://zh.wikipedia.org/wiki/%E6%9D%B1%E5%B0%BC%C2%B7%E9%9C%8D%E7%88%BE">Tony Hoare</a>在1965年将空指针功能加入了他所设计的ALGOL W编程语言中,&quot;只是因为这样比较好实现&quot;.这一行为引起了C/C++/Java等等等等语言的效仿.Tony Hoare认为他所设计的空指针功能从那时开始到现在,至少为人民群众带来了十亿美金的损失(主要是运行时的进程崩溃带来的),进行了忏悔.</p>
+<p>忏悔都忏悔了,损失已经造成了,那我们要怎样带着历史包袱前进,来应对空指针可能带来的损失呢?Scala给我们提供了一个工具叫<code class="hljs language-scala"><span class="hljs-type">Option</span></code>.</p>
+<p>举个例子,在Java中您想获得一个字符串的长度,可以这么定义一个函数</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-java">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">lenOfString</span><span class="hljs-params">(String str)</span> </span>{
+        <span class="hljs-keyword">return</span> str.length();
+    } <span class="hljs-comment">// 版本1</span>
+</code></pre>
+</div></div>
+<p>一些比较年轻,比较简单,有时还很幼稚的小朋友可能觉得这个定义没什么问题,可一到实际试用中就会出事</p>
+<p>比如当一个空值传入的时候</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-java">        String a = <span class="hljs-keyword">null</span>;
+        System.out.println(<span class="hljs-string">"length of a: "</span> + lenOfString(a));
+        <span class="hljs-comment">//Exception in thread "main" java.lang.NullPointerException</span>
+        <span class="hljs-comment">//at NullSample.lenOfString(NullSample.java:5)</span>
+        <span class="hljs-comment">//at NullSample.main(NullSample.java:15)</span>
+</code></pre>
+</div></div>
+<p>为了避免这种情况,一些长者会这么写</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-java">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">lenOfNullableString</span><span class="hljs-params">(String str)</span> </span>{
+        <span class="hljs-keyword">if</span> (str == <span class="hljs-keyword">null</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">return</span> str.length();
+    }
+</code></pre>
+</div></div>
+<p>这样确实可以避免null异常发生.可是它有一个问题,那就是它不是强制的,依据每个人的工作环境不同,没做空值检查的代码可能会获得Warning,也可能不会,(就算会有Warning,很多人也会被过多Warning伤害从而无视Warning).当项目中有稍许基础需要做空检查的时候,大部分人都能做好,可是当对空检查的需求到达几十次,几百次的时候,人就多多少少会有遗漏,那些遗漏可能带来大量的运行时损失.</p>
+<p>Scala因为继承了JVM的设计,也是允许<code class="hljs language-scala"><span class="hljs-literal">null</span></code>值出现的,但是您在Scala原创的代码中几乎总是有很好的方法避免使用<code class="hljs language-scala"><span class="hljs-literal">null</span></code>值,需要处理<code class="hljs language-scala"><span class="hljs-literal">null</span></code>值的情况主要出现在调用Java代码的情况下.如果我们用<code class="hljs language-scala"><span class="hljs-type">Option</span>(...)</code>包住一个<code class="hljs language-scala"><span class="hljs-literal">null</span></code>值,我们就会自动得到一个<code class="hljs language-scala"><span class="hljs-type">None</span></code>,如果我们用<code class="hljs language-scala"><span class="hljs-type">Option</span>(...)</code>包住一个非<code class="hljs language-scala"><span class="hljs-literal">null</span></code>值,我们就会得到一个<code class="hljs language-scala"><span class="hljs-type">Some</span>(...)</code></p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mockSomeJCodeMayNull</span></span>(giveMeNull: <span class="hljs-type">Boolean</span>) = {
+    <span class="hljs-keyword">if</span> (giveMeNull) <span class="hljs-literal">null</span> <span class="hljs-keyword">else</span> <span class="hljs-string">"not null"</span>
+  }
+
+  <span class="hljs-keyword">val</span> nullToOpt = <span class="hljs-type">Option</span>(mockSomeJCodeMayNull(<span class="hljs-literal">true</span>))
+  <span class="hljs-comment">// nullToOpt: Option[String] = None</span>
+  <span class="hljs-keyword">val</span> nonNullToOpt = <span class="hljs-type">Option</span>(mockSomeJCodeMayNull(<span class="hljs-literal">false</span>))
+  <span class="hljs-comment">// nonNullToOpt: Option[String] = Some("not null")</span>
+</code></pre>
+</div></div>
+<p>↑↑↑↑↑上方就是把可能为<code class="hljs language-scala"><span class="hljs-literal">null</span></code>的值变成<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的玩法啦,既然已经知道怎么把可能为<code class="hljs language-scala"><span class="hljs-literal">null</span></code>的值转成<code class="hljs language-scala"><span class="hljs-type">Option</span></code>了,下面就展示些代码看我们怎么可以和<code class="hljs language-scala"><span class="hljs-type">Option</span></code>玩耍吧.</p>
+<p><code class="hljs language-scala"><span class="hljs-type">Option</span></code>很常见的一种应用场景是处理<code class="hljs language-scala"><span class="hljs-type">Map</span></code>中可能不包含相应键的情况</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> squares = <span class="hljs-type">Map</span>(<span class="hljs-number">1</span> -&gt; <span class="hljs-number">1</span>, <span class="hljs-number">2</span> -&gt; <span class="hljs-number">4</span>, <span class="hljs-number">3</span> -&gt; <span class="hljs-number">9</span>, <span class="hljs-number">4</span> -&gt; <span class="hljs-number">16</span>)
+  <span class="hljs-keyword">val</span> squares2 = squares(<span class="hljs-number">2</span>)
+  <span class="hljs-comment">// squares2: Int = 4 直接取出相应值,有可能抛出NoSuchElementException,不建议使用</span>
+  <span class="hljs-keyword">val</span> squares5 = squares(<span class="hljs-number">5</span>)
+  <span class="hljs-comment">// java.util.NoSuchElementException: key not found: 5</span>
+  <span class="hljs-keyword">val</span> squares2Opt = squares.get(<span class="hljs-number">2</span>)
+  <span class="hljs-comment">// squares5Opt: Option[Int] = None 使用get方法,没有相应键的时候不是抛异常,而是返回一个None</span>
+  <span class="hljs-keyword">val</span> squares5Opt = squares.get(<span class="hljs-number">5</span>)
+  <span class="hljs-keyword">val</span> squares5WithDefault = squares.getOrElse(<span class="hljs-number">5</span>, <span class="hljs-number">25</span>)
+  <span class="hljs-comment">// squares5WithDefault: Int = 25 如果没有相应键,就采用我们填入的默认值,这里是25</span>
+  <span class="hljs-comment">// 下方可以看getOrElse具体的实现方法 ↓↓↓</span>
+  <span class="hljs-comment">//  def getOrElse[V1 &gt;: V](key: K, default: =&gt; V1): V1 = get(key) match {</span>
+  <span class="hljs-comment">//    case Some(v) =&gt; v</span>
+  <span class="hljs-comment">//    case None =&gt; default</span>
+  <span class="hljs-comment">//  }</span>
+</code></pre>
+</div></div>
+<p>在一般集合中,我们也能用<code class="hljs language-scala"><span class="hljs-type">Option</span></code>来帮忙应对它们可能没有某些符合要求的值和可能为空的情况</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> vec = <span class="hljs-type">Vector</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)
+  <span class="hljs-keyword">val</span> findAOdd = vec.find(x =&gt; x % <span class="hljs-number">2</span> != <span class="hljs-number">0</span>)
+  <span class="hljs-comment">//findAOdd: Option[Int] = Some(1)</span>
+  <span class="hljs-keyword">val</span> findGt8 = vec.find(x =&gt; x &gt; <span class="hljs-number">8</span>)
+  <span class="hljs-comment">//findGt8: Option[Int] = None</span>
+  <span class="hljs-keyword">val</span> emptyVec = <span class="hljs-type">Vector</span>.empty[<span class="hljs-type">Int</span>]
+  <span class="hljs-keyword">val</span> headOfVec = vec.headOption
+  <span class="hljs-comment">//headOfVec: Option[Int] = Some(1)</span>
+  <span class="hljs-keyword">val</span> headOfEmptyVec = emptyVec.headOption
+  <span class="hljs-comment">//headOfEmptyVec: Option[Int] = None</span>
+</code></pre>
+</div></div>
+<p>为什么<code class="hljs language-scala"><span class="hljs-type">Option</span></code>可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>不是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]</code>也不是<code class="hljs language-scala"><span class="hljs-type">String</span></code>,您把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>中的内容取出来前,无法正确地用<code class="hljs language-scala"><span class="hljs-type">Int</span></code>或<code class="hljs language-scala"><span class="hljs-type">String</span></code>或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地获取Option中的值.</p>
+<ul>
+<li>
+<p>给出一个默认值</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> noneOrElse = <span class="hljs-type">None</span>.getOrElse(<span class="hljs-number">2</span>)
+  <span class="hljs-comment">// noneOrElse: Int = 2</span>
+  <span class="hljs-keyword">val</span> someOrElse = <span class="hljs-type">Some</span>(<span class="hljs-number">1</span>).getOrElse(<span class="hljs-number">2</span>)
+  <span class="hljs-comment">// someOrElse: Int = 1</span>
+</code></pre>
+</div></div>
+</li>
+<li>
+<p>把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>也当做一个集合,用集合</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> square10Opt = <span class="hljs-type">Some</span>(<span class="hljs-number">10</span>).map(x =&gt; x * x)
+  <span class="hljs-comment">//square10Opt: Option[Int] = Some(100)</span>
+  <span class="hljs-keyword">val</span> intNone: <span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">None</span>
+  <span class="hljs-keyword">val</span> squareNone = intNone.map(x =&gt; x * x)
+  <span class="hljs-comment">//squareNone: Option[Int] = None</span>
+  <span class="hljs-keyword">val</span> someForeach = <span class="hljs-type">Some</span>(<span class="hljs-number">10</span>).foreach {
+    x =&gt; println(<span class="hljs-string">s"这个Option里包含了整数 <span class="hljs-subst">$x</span>"</span>)
+  }
+  <span class="hljs-comment">//输出了 这个Option里包含了整数 10</span>
+  <span class="hljs-keyword">val</span> nonForeach = intNone.foreach {
+    x =&gt; println(<span class="hljs-string">s"这个Option里包含了整数 <span class="hljs-subst">$x</span>"</span>)
+  }
+  <span class="hljs-comment">//什么也没输出</span>
+</code></pre>
+</div></div>
+</li>
+</ul>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
 <p>发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib</p>
 
