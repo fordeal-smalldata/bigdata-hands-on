@@ -203,7 +203,6 @@ Scala的`Array`和Java中的`Array`底层实现是一样的,但是增加了很�
   // res4: Month = AUGUST
   yearMonthDay._3
   // res5: Int = 20
-
   val (year, month, day) = yearMonthDay
   //year: Int = 2019
   //month: Month = AUGUST
@@ -212,6 +211,61 @@ Scala的`Array`和Java中的`Array`底层实现是一样的,但是增加了很�
 
 ### 通用操作
 
+Scala标准库中有许多通用的操作,`Array`,`Vector`,`Set`,`Map`等等都能用,下面以Vector为例展示这些操作.
 
+```scala
+  val vec = Vector(1, 2, 3, 4, 5)
+  // vec: Vector[Int] = Vector(1, 2, 3, 4, 5)
+  val vec2 = Vector("a", "b", "c", "d", "e", "f", "g")
+  // vec2: Vector[String] = Vector("a", "b", "c", "d", "e", "f", "g")
+  vec.take(3)
+  // res2: Vector[Int] = Vector(1, 2, 3)
+  vec.drop(3)
+  // res3: Vector[Int] = Vector(4, 5)
+  vec.filter(x => x % 2 == 0)
+  // res4: Vector[Int] = Vector(2, 4)
+  vec.map(x => x.toString)
+  // res5: Vector[String] = Vector("1", "2", "3", "4", "5")
+  vec.reverse
+  // res6: Vector[Int] = Vector(5, 4, 3, 2, 1)
+  val grouped = vec.groupBy(x => x % 2 == 0)
+  // grouped: Map[Boolean, Vector[Int]] = HashMap(false -> Vector(1, 3, 5), true -> Vector(2, 4))
+  grouped(true)
+  // res8: Vector[Int] = Vector(2, 4)
+  grouped(false)
+  // res9: Vector[Int] = Vector(1, 3, 5)
+```
+
+除了上述通用的操作外,标准库还提供了便利的方法让这些数据结构相互转换,通常这种操作叫`toXXX`,勇敢地使用ide的自动提示就能发现他们.
+
+```scala
+  val tuples = vec.zip(vec2)
+  // tuples: Vector[(Int, String)] = Vector((1, "a"), (2, "b"), (3, "c"), (4, "d"), (5, "e"))
+
+  val tuplesMap = tuples.toMap
+  // tuplesMap: Map[Int, String] = HashMap(5 -> "e", 1 -> "a", 2 -> "b", 3 -> "c", 4 -> "d")
+
+  val tuplesSeq = tuplesMap.toSeq
+  // tuplesSeq: Seq[(Int, String)] = List((5, "e"), (1,  "a"), (2, "b"), (3, "c"), (4, "d"))
+
+	val arrToSet =   Array(1,2,3,4,4).toSet
+	// arrToSet: Set[Int] = Set(1, 2, 3, 4)
+```
+
+ 对数据做聚合也是数据处理中经常用到的技巧,比较有代表性的就是`reduce`和`fold`,详细一些的介绍可以看[这篇](https://www.geeksforgeeks.org/scala-reduce-fold-or-scan/)文章或者上一些[主流视频平台搜索](https://www.youtube.com/results?search_query=scala++reduce+fold)获得
+
+```scala
+  val reduced = vec.reduce {
+    (x: Int, y: Int) => x.max(y)
+  }
+  //reduced: Int = 5
+
+  val folded = vec.foldLeft("values of vector:") {
+    (str, num) => str + " " + num
+  }
+  // folded: String = "values of vector: 1 2 3 4 5"
+```
+
+Spark也好,Flink也好,它们的API几乎就是个大号的Scala标准库,也就是在标准库的基础上帮您做了一些分布式,高并发,异步处理,背压之类的工作.对于用户而言,用起来是差不多的,所以掌握好标准库对您之后操作那些设施很有帮助,建议多多练习.
 
 ## Billion Dollar Mistake
