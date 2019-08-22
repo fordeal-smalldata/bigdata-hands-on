@@ -355,7 +355,7 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
   //headOfEmptyVec: Option[Int] = None
 ```
 
-为什么`Option`可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为`Option[Int]`不是`Int`,`Option[String]`也不是`String`,您把`Option`中的内容取出来前,无法正确地用`Int`或`String`或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地获取Option中的值.
+为什么`Option`可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为`Option[Int]`不是`Int`,`Option[String]`也不是`String`,您把`Option`中的内容取出来前,无法正确地用`Int`或`String`或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地操作`Option`.
 
 * 给出一个默认值
 
@@ -366,7 +366,7 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
     // someOrElse: Int = 1
   ```
 
-* 把`Option`也当做一个集合,用集合
+* 把`Option`也当做一个集合,集合通用的各种操作都能在`Option`中使用
 
   ```scala
     val square10Opt = Some(10).map(x => x * x)
@@ -377,14 +377,21 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
     val someForeach = Some(10).foreach {
       x => println(s"这个Option里包含了整数 $x")
     }
-    //输出了 这个Option里包含了整数 10
+    //输出: 这个Option里包含了整数 10
     val nonForeach = intNone.foreach {
       x => println(s"这个Option里包含了整数 $x")
     }
     //什么也没输出
-  ```
-
   
+  //可以和别的类型的集合组合
+    val vec1 = Vector(1,2,3) ++ Option(4)
+    //vec1: Vector[Int] = Vector(1, 2, 3, 4)
+    val vec2 = Vector(1,2,3) ++ None
+    //vec2: Vector[Int] = Vector(1, 2, 3)
+  ```
+  
+
+一点小提示: 刚接触`Option`的同学可能出现一个非常依赖`getOrElse`的情况,这样就可以从`Option`的危险区回落到自己习惯的基本类型安全区了.需要这样做并不丢人,但要多思考一下自己是不是没有充分利用Scala的表达式能力,以及`Option`作为集合的各种特性.
 
 ## 习题
 

@@ -375,7 +375,7 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
   <span class="hljs-comment">//headOfEmptyVec: Option[Int] = None</span>
 </code></pre>
 </div></div>
-<p>为什么<code class="hljs language-scala"><span class="hljs-type">Option</span></code>可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>不是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]</code>也不是<code class="hljs language-scala"><span class="hljs-type">String</span></code>,您把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>中的内容取出来前,无法正确地用<code class="hljs language-scala"><span class="hljs-type">Int</span></code>或<code class="hljs language-scala"><span class="hljs-type">String</span></code>或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地获取Option中的值.</p>
+<p>为什么<code class="hljs language-scala"><span class="hljs-type">Option</span></code>可以帮助我们避免运行时空指针错误呢?秘诀就是它把错误都提前到了编译时,因为<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>不是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]</code>也不是<code class="hljs language-scala"><span class="hljs-type">String</span></code>,您把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>中的内容取出来前,无法正确地用<code class="hljs language-scala"><span class="hljs-type">Int</span></code>或<code class="hljs language-scala"><span class="hljs-type">String</span></code>或别的什么类型做出任何进一步操作,否则编译器就会报错.下面展示一下有哪些方法可以合适地操作<code class="hljs language-scala"><span class="hljs-type">Option</span></code>.</p>
 <ul>
 <li>
 <p>给出一个默认值</p>
@@ -388,7 +388,7 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
 </div></div>
 </li>
 <li>
-<p>把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>也当做一个集合,用集合</p>
+<p>把<code class="hljs language-scala"><span class="hljs-type">Option</span></code>也当做一个集合,集合通用的各种操作都能在<code class="hljs language-scala"><span class="hljs-type">Option</span></code>中使用</p>
 <div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
 <pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> square10Opt = <span class="hljs-type">Some</span>(<span class="hljs-number">10</span>).map(x =&gt; x * x)
   <span class="hljs-comment">//square10Opt: Option[Int] = Some(100)</span>
@@ -398,15 +398,22 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
   <span class="hljs-keyword">val</span> someForeach = <span class="hljs-type">Some</span>(<span class="hljs-number">10</span>).foreach {
     x =&gt; println(<span class="hljs-string">s"这个Option里包含了整数 <span class="hljs-subst">$x</span>"</span>)
   }
-  <span class="hljs-comment">//输出了 这个Option里包含了整数 10</span>
+  <span class="hljs-comment">//输出: 这个Option里包含了整数 10</span>
   <span class="hljs-keyword">val</span> nonForeach = intNone.foreach {
     x =&gt; println(<span class="hljs-string">s"这个Option里包含了整数 <span class="hljs-subst">$x</span>"</span>)
   }
   <span class="hljs-comment">//什么也没输出</span>
+
+<span class="hljs-comment">//可以和别的类型的集合组合</span>
+  <span class="hljs-keyword">val</span> vec1 = <span class="hljs-type">Vector</span>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>) ++ <span class="hljs-type">Option</span>(<span class="hljs-number">4</span>)
+  <span class="hljs-comment">//vec1: Vector[Int] = Vector(1, 2, 3, 4)</span>
+  <span class="hljs-keyword">val</span> vec2 = <span class="hljs-type">Vector</span>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>) ++ <span class="hljs-type">None</span>
+  <span class="hljs-comment">//vec2: Vector[Int] = Vector(1, 2, 3)</span>
 </code></pre>
 </div></div>
 </li>
 </ul>
+<p>一点小提示: 刚接触<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的同学可能出现一个非常依赖<code class="hljs language-scala">getOrElse</code>的情况,这样就可以从<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的危险区回落到自己习惯的基本类型安全区了.需要这样做并不丢人,但要多思考一下自己是不是没有充分利用Scala的表达式能力,以及<code class="hljs language-scala"><span class="hljs-type">Option</span></code>作为集合的各种特性.</p>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
 <p>发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib</p>
 
