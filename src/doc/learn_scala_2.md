@@ -432,4 +432,4 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
 
 参考答案在`src/main/scala/answer/Answer2.scala`中
 
-* 发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib
+* 发现一套不错的线上习题集,建议尝试: [https://www.scala-exercises.org/std_lib](https://www.scala-exercises.org/std_lib)
