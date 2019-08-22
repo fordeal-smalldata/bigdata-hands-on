@@ -416,7 +416,42 @@ res4: <span class="hljs-type">Int</span> = <span class="hljs-number">27</span>
 </ul>
 <p>一点小提示: 刚接触<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的同学可能出现一个非常依赖<code class="hljs language-scala">getOrElse</code>的情况,这样就可以从<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的危险区回落到自己习惯的基本类型安全区了.需要这样做并不丢人,但要多思考一下自己是不是没有充分利用Scala的表达式能力,以及<code class="hljs language-scala"><span class="hljs-type">Option</span></code>作为集合的各种特性.</p>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
-<p>发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib</p>
+<p>按照<a href="index.html#习题集">材料准备</a>里的提示把习题下载到本地,编辑<code class="hljs language-scala">src/main/scala/quiz/<span class="hljs-type">Quiz2</span>.scala</code>,更改文件中的<code class="hljs language-scala">???</code>.在项目根目录下执行<code class="hljs language-scala">./gradlew run --args=<span class="hljs-symbol">'quiz</span>.<span class="hljs-type">Quiz2</span>'</code>,获得以下输出说明习题完成.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-number">100</span>以内的素数有:
+[<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">7</span>,<span class="hljs-number">11</span>,<span class="hljs-number">13</span>,<span class="hljs-number">17</span>,<span class="hljs-number">19</span>,<span class="hljs-number">23</span>,<span class="hljs-number">29</span>,<span class="hljs-number">31</span>,<span class="hljs-number">37</span>,<span class="hljs-number">41</span>,<span class="hljs-number">43</span>,<span class="hljs-number">47</span>,<span class="hljs-number">53</span>,<span class="hljs-number">59</span>,<span class="hljs-number">61</span>,<span class="hljs-number">67</span>,<span class="hljs-number">71</span>,<span class="hljs-number">73</span>,<span class="hljs-number">79</span>,<span class="hljs-number">83</span>,<span class="hljs-number">89</span>,<span class="hljs-number">97</span>]
+
+   <span class="hljs-number">2019</span>年1季度日历
+         <span class="hljs-number">1</span>月
+日 一 二 三 四 五 六
+      <span class="hljs-number">01</span> <span class="hljs-number">02</span> <span class="hljs-number">03</span> <span class="hljs-number">04</span> <span class="hljs-number">05</span>
+<span class="hljs-number">06</span> <span class="hljs-number">07</span> <span class="hljs-number">08</span> <span class="hljs-number">09</span> <span class="hljs-number">10</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span>
+<span class="hljs-number">13</span> <span class="hljs-number">14</span> <span class="hljs-number">15</span> <span class="hljs-number">16</span> <span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span>
+<span class="hljs-number">20</span> <span class="hljs-number">21</span> <span class="hljs-number">22</span> <span class="hljs-number">23</span> <span class="hljs-number">24</span> <span class="hljs-number">25</span> <span class="hljs-number">26</span>
+<span class="hljs-number">27</span> <span class="hljs-number">28</span> <span class="hljs-number">29</span> <span class="hljs-number">30</span> <span class="hljs-number">31</span>
+
+         <span class="hljs-number">2</span>月
+日 一 二 三 四 五 六
+               <span class="hljs-number">01</span> <span class="hljs-number">02</span>
+<span class="hljs-number">03</span> <span class="hljs-number">04</span> <span class="hljs-number">05</span> <span class="hljs-number">06</span> <span class="hljs-number">07</span> <span class="hljs-number">08</span> <span class="hljs-number">09</span>
+<span class="hljs-number">10</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span> <span class="hljs-number">14</span> <span class="hljs-number">15</span> <span class="hljs-number">16</span>
+<span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">21</span> <span class="hljs-number">22</span> <span class="hljs-number">23</span>
+<span class="hljs-number">24</span> <span class="hljs-number">25</span> <span class="hljs-number">26</span> <span class="hljs-number">27</span> <span class="hljs-number">28</span>
+
+         <span class="hljs-number">3</span>月
+日 一 二 三 四 五 六
+               <span class="hljs-number">01</span> <span class="hljs-number">02</span>
+<span class="hljs-number">03</span> <span class="hljs-number">04</span> <span class="hljs-number">05</span> <span class="hljs-number">06</span> <span class="hljs-number">07</span> <span class="hljs-number">08</span> <span class="hljs-number">09</span>
+<span class="hljs-number">10</span> <span class="hljs-number">11</span> <span class="hljs-number">12</span> <span class="hljs-number">13</span> <span class="hljs-number">14</span> <span class="hljs-number">15</span> <span class="hljs-number">16</span>
+<span class="hljs-number">17</span> <span class="hljs-number">18</span> <span class="hljs-number">19</span> <span class="hljs-number">20</span> <span class="hljs-number">21</span> <span class="hljs-number">22</span> <span class="hljs-number">23</span>
+<span class="hljs-number">24</span> <span class="hljs-number">25</span> <span class="hljs-number">26</span> <span class="hljs-number">27</span> <span class="hljs-number">28</span> <span class="hljs-number">29</span> <span class="hljs-number">30</span>
+<span class="hljs-number">31</span>
+</code></pre>
+</div></div>
+<p>参考答案在<code class="hljs language-scala">src/main/scala/answer/<span class="hljs-type">Answer2</span>.scala</code>中</p>
+<ul>
+<li>发现一套不错的线上习题集,建议尝试: https://www.scala-exercises.org/std_lib</li>
+</ul>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
