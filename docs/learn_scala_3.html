@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+    <title>Scala入门(三)</title>
     <link rel="stylesheet" href="theme/css/foundation.min.css">
     <link rel="stylesheet" href="theme/css/app.css">
     
      <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
-     <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
+     <link rel="prev" href="learn_scala_2.html"  title="Scala入门(二)"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
   <body>
     <div class="expanded row">
@@ -46,38 +46,41 @@
   <ul class="menu align-right simple a_navbar a_navbar_top">
     
       
+        <li><a href="learn_scala_2.html"  title="Scala入门(二)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
+    
+      
         <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
       
     
   </ul>
  
                 
-                
-  <h1 id="search" class="a_section" data-magellan-target="search">Search<a class="a_hlink" href="#search"></a></h1>
-<p>From here you can search all pages. Enter the search terms below and click the search button. Note that the search function will search for a combination of <em>all</em> search terms.</p>
-
-
-   
-     <noscript> <blockquote class="warning">
-<p>This page requires JavaScript. Please enable JavaScript in your browser.</p>
-</blockquote>
- </noscript> 
-  
-
-  <div id="_main_search" style="display: none">
-    <form action="site-search.html" method="get" class="a_search">
-      <input id="_q" name="q" type="search"  placeholder="" >
-      <button class="button"><img alt="&#1F50D;" src="theme/images/search-white.svg" /></button>
-    </form>
-    <div id="_res" style="display: none">
-      <p id="_rescount" ></p>
-      <ul id="_reslist" class="a_searchresults">
-      </ul>
-    </div>
-  </div>
+                <h1 id="scala入门三" class="a_section" data-magellan-target="scala入门三">Scala入门(三)<a class="a_hlink" href="#scala入门三"></a></h1>
+<h2 id="case-class-和模式匹配" class="a_section" data-magellan-target="case-class-和模式匹配">case class 和模式匹配<a class="a_hlink" href="#case-class-和模式匹配"></a></h2>
+<h3 id="正则匹配" class="a_section" data-magellan-target="正则匹配">正则匹配<a class="a_hlink" href="#正则匹配"></a></h3>
+<h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
+<h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
+<h2 id="一些语法糖" class="a_section" data-magellan-target="一些语法糖">一些语法糖<a class="a_hlink" href="#一些语法糖"></a></h2>
+<h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>
+<h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>
+<h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
+<p>牛顿迭代法求平方根</p>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
+    
+      
+        <li><a href="learn_scala_2.html"  title="Scala入门(二)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
     
       
         <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
@@ -120,7 +123,7 @@
     
   </li>
   
-  <li >
+  <li  class="a_thispage" >
     
       
         <a href="learn_scala_3.html">Scala入门(三)</a>
@@ -136,6 +139,101 @@
                 </div>
               
               
+              
+                <div class="small-12 medium-12 large-2 large-order-3 columns a_show-for-xlarge" data-sticky-container>
+                  <nav class="a_pagenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                     <header><p>On This Page</p>
+</header> 
+                    <ul class="vertical menu" data-magellan>
+                       
+  
+    <li>
+      
+         <a href="#scala入门三">Scala入门(三)</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#case-class-和模式匹配">case class 和模式匹配</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#正则匹配">正则匹配</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#异常处理">异常处理</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#调用java代码">调用Java代码</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#一些语法糖">一些语法糖</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#试试摆脱break">试试摆脱break</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#尾递归">尾递归</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#习题">习题</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+ 
+                    </ul>
+                  </nav>
+                </div>
               
             </div>
           </div>
@@ -163,81 +261,5 @@
     
     <script src="theme/js/app.js"></script>
     
-   <script src="search-index.js"></script> 
-  <script src="theme/js/elasticlunr.min.js"></script>
-  <script type="text/javascript" />
-    $("#_main_search").css("display", "block");
-    var searchCount0 = "No matching pages found.",
-      searchCount1 = "Found one matching page:",
-      searchCountN = "Found # matching pages:";
-
-    function getParams() {
-      var match, search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); },
-        query = window.location.search.substring(1), p = {};
-      while(match = search.exec(query)) p[decode(match[1])] = decode(match[2]);
-      return p;
-    }
-
-    var index = elasticlunr.Index.load(window._searchIndex.idx);
-    var indexData = window._searchIndex.data;
-    window._searchIndex = null;
-
-    var currentQuery = "";
-    function updateResults(query) {
-      if(query === currentQuery) return;
-      currentQuery = query;
-      var reslist = $("#_reslist"), count = -1;
-      reslist.empty();
-      if(query !== "") {
-        res = index.search(query, { fields: { t: {boost: 2}, k: {boost: 2}, b: {boost: 1} }, bool: "AND" });
-        count = res.length;
-        for(var i=0; i < count; i++) {
-          var data = indexData[parseInt(res[i].ref)]
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.setAttribute("href", data[2]);
-          a.appendChild(document.createTextNode(data[0]));
-          li.appendChild(a);
-          var p = document.createElement("p");
-          p.appendChild(document.createTextNode(data[1]));
-          li.appendChild(p);
-          reslist.append(li);
-        }
-      }
-      if(count == 0) $("#_rescount").text(searchCount0);
-      else if(count == 1) $("#_rescount").text(searchCount1);
-      else if(count > 1) $("#_rescount").text(searchCountN.replace(/\#/g, ""+count));
-      else $("#_rescount").empty();
-      $("#_res").css("display", "block");
-    }
-
-    window.onpopstate = function() {
-      var params = getParams();
-      var query = "";
-      if(params.q) query = params.q;
-      $("#_q")[0].value = query;
-      updateResults(query);
-    };
-
-    function pushSearch(q) {
-      var url = window.location.href.split('?')[0];
-      var href = url + "?q=" + encodeURIComponent(q);
-      history.pushState({}, "", href);
-      window.onpopstate();
-      return false;
-    }
-
-    $("main .a_search button").click(function() {
-      return pushSearch($("#_q").val());
-    });
-    $(".top-bar-right .a_search button").click(function() {
-      return pushSearch($(".top-bar-right .a_search input").val());
-    });
-
-    window.onpopstate();
-    $("#_q").focus();
-  </script>
-
   </body>
 </html>

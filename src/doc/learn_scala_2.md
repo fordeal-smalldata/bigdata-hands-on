@@ -395,6 +395,8 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
 
 一点小提示: 刚接触`Option`的同学可能出现一个非常依赖`getOrElse`的情况,这样就可以从`Option`的危险区回落到自己习惯的基本类型安全区了.需要这样做并不丢人,但要多思考一下自己是不是没有充分利用Scala的表达式能力,以及`Option`作为集合的各种特性.
 
+温馨提示: 对各种API的功能有怀疑的时候,多查[官方文档](https://www.scala-lang.org/api/2.13.0/index.html).
+
 ## 习题
 
 按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz2.scala`,更改文件中的`???`.在项目根目录下执行`./gradlew run --args='quiz.Quiz2'`,获得以下输出说明习题完成.
