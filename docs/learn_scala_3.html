@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="theme/css/foundation.min.css">
     <link rel="stylesheet" href="theme/css/app.css">
     
-     <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
+     <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
      <link rel="prev" href="learn_scala_2.html"  title="Scala入门(二)"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
@@ -61,7 +61,47 @@
  
                 
                 <h1 id="scala入门三" class="a_section" data-magellan-target="scala入门三">Scala入门(三)<a class="a_hlink" href="#scala入门三"></a></h1>
-<h2 id="case-class-和模式匹配" class="a_section" data-magellan-target="case-class-和模式匹配">case class 和模式匹配<a class="a_hlink" href="#case-class-和模式匹配"></a></h2>
+<h2 id="case-class和模式匹配" class="a_section" data-magellan-target="case-class和模式匹配">case class和模式匹配<a class="a_hlink" href="#case-class和模式匹配"></a></h2>
+<p>咱们的讲义开头已经提到了,这个系列讲义是教您怎么用Scala处理数据的.那么我们就在这里着重介绍Scala提供的一个能为您处理数据提供一个很大便利性的特性,叫做<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>.</p>
+<p><code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>在默认的<code class="hljs language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span></span></code>基础上提供了若干便利特性(Scala默认的<code class="hljs language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span></span></code>基本上就是Java的<code class="hljs language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span></span></code>),我们先看一下一些默认<code class="hljs language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span></span></code>代码的运行结果</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Point</span>(<span class="hljs-params">val x: <span class="hljs-type">Int</span>, val y: <span class="hljs-type">Int</span></span>)</span>
+
+  <span class="hljs-keyword">val</span> point1 = <span class="hljs-keyword">new</span> <span class="hljs-type">Point</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">val</span> point2 = <span class="hljs-keyword">new</span> <span class="hljs-type">Point</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+  println(point1)
+  <span class="hljs-comment">//输出 Point@1e643faf</span>
+  println(point1 == point2)
+  <span class="hljs-comment">//输出 false</span>
+
+  <span class="hljs-keyword">val</span> point1x = point1.x
+  <span class="hljs-keyword">val</span> point1y = point1.y
+  println(<span class="hljs-string">"point1x = "</span> + point1x) <span class="hljs-comment">//point1x = 1</span>
+  println(<span class="hljs-string">"point1y = "</span> + point1y) <span class="hljs-comment">//point1y = 1</span>
+</code></pre>
+</div></div>
+<p>上述代码中我们可以注意到两个点,一个是<code class="hljs language-scala">println(point1)</code>输出了<code class="hljs language-scala"><span class="hljs-type">Point</span>@<span class="hljs-number">1e643</span>faf</code>,这是默认调用了Java里的<code class="hljs language-scala"><span class="hljs-type">Object</span>.toString</code>的结果,一个Scala类就是一个Java类,所以Scala类也都是Java里Object类的子类.默认的<code class="hljs language-scala"><span class="hljs-type">Object</span>.toString</code>在我们实际工作中一般起不到什么帮助,所以我们一般会重新为我们的类定义一个<code class="hljs language-scala">toString</code>来覆盖<code class="hljs language-scala"><span class="hljs-type">Object</span>.toString</code>来方便调试监控什么的.</p>
+<p>另外,<code class="hljs language-scala">println(point1 == point2)</code>输出了<code class="hljs language-scala"><span class="hljs-literal">false</span></code>,因为<code class="hljs language-scala">==</code>调用了<code class="hljs language-scala">equals</code>方法,按照默认的<code class="hljs language-scala"><span class="hljs-type">Object</span>.equals</code>实现,这个方法是比较两个对象的内存地址,如果地址不一样就返回<code class="hljs language-scala"><span class="hljs-literal">false</span></code>.实际绝大部分数据处理场景下,几乎没有人关心两个对象地址是否一样,所以默认的<code class="hljs language-scala">equals</code>方法也没什么用处.</p>
+<p>每次定义一个新类,都要定义大量的重载,是一件挺麻烦的事情,所以针对群众的需要,<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>出现了,我们来看下<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>的表现.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Point</span>(<span class="hljs-params">x: <span class="hljs-type">Int</span>, y: <span class="hljs-type">Int</span></span>)</span>
+
+  <span class="hljs-keyword">val</span> point1 = <span class="hljs-type">Point</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">val</span> point2 = <span class="hljs-type">Point</span>(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">val</span> point3 = point2.copy(y = <span class="hljs-number">10</span>)
+  println(point3)
+  <span class="hljs-comment">//输出 Point(1,10)</span>
+  println(point1 == point2)
+  <span class="hljs-comment">//输出 true</span>
+
+  <span class="hljs-keyword">val</span> <span class="hljs-type">Point</span>(point1x, point1y) = point1
+  println(<span class="hljs-string">"point1x = "</span> + point1x)
+  <span class="hljs-comment">// point1x = 1</span>
+  println(<span class="hljs-string">"point1y = "</span> + point1y)
+  <span class="hljs-comment">// point1y = 1</span>
+</code></pre>
+</div></div>
+<p>定义<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>的时候,您不用在<code class="hljs language-scala">x</code>和<code class="hljs language-scala">y</code>面前增加<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>(因为<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code> 默认都用<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>定义成员),并且会自动给您生成一个实用的<code class="hljs language-scala">toString</code>和一个实用的<code class="hljs language-scala">equals</code>方法,除此之外,还提供了便利地用旧<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>局部重新赋值,生成新<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>的方法(见<code class="hljs language-scala">point3</code>),还提供了模式匹配功能,见(<code class="hljs language-scala">point1x</code>和<code class="hljs language-scala">point1y</code>),模式匹配功能我们接着细说.</p>
 <h3 id="正则匹配" class="a_section" data-magellan-target="正则匹配">正则匹配<a class="a_hlink" href="#正则匹配"></a></h3>
 <h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
@@ -156,7 +196,7 @@
   
     <li>
       
-         <a href="#case-class-和模式匹配">case class 和模式匹配</a> 
+         <a href="#case-class和模式匹配">case class和模式匹配</a> 
       
       
         <ul class="vertical menu">  
