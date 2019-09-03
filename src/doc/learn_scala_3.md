@@ -182,6 +182,25 @@ one warning found
 
 ### 变长参数匹配
 
+模式匹配除了匹配`case class`和基本数据类型外,还能匹配标准库里的一些数据结构,例如`Seq`,我们可以利用模式匹配便利地为`Seq`中我们需要的内容命名
+
+```scala
+  val seq = Seq(1, 2, 3, 4, 5)
+  val Seq(a, b, c, d, e) = seq
+  println(a,b,c,d,e) //输出 (1,2,3,4,5)
+```
+
+当然,这种情况需要两边元素个数完全符合才行,如果元素有多或者又少就会出现编译错误
+
+```scala
+  val seq = Seq(1, 2, 3, 4, 5)
+  val Seq(a, b, c, d) = seq
+  // Exception in thread "main" scala.MatchError: List(1, 2, 3, 4, 5) (of class scala.collection.immutable.$colon$colon)
+  println(a,b,c,d)
+```
+
+
+
 ### 正则匹配
 
 ## 异常处理

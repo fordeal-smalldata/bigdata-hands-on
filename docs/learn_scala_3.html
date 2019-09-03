@@ -224,6 +224,21 @@ one warning found
 <p>我们来看下这个场景下<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>加模式匹配为您做了什么.</p>
 <p>首先它通过编译器提示帮助您找出了考虑疏漏的地方,然后针对匹配到的内容,您可以同时便捷的取出<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>中需要的数据.最后,您可以通过一个通配的情况统一处理您不并关心的其它各种可能性.</p>
 <h3 id="变长参数匹配" class="a_section" data-magellan-target="变长参数匹配">变长参数匹配<a class="a_hlink" href="#变长参数匹配"></a></h3>
+<p>模式匹配除了匹配<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>和基本数据类型外,还能匹配标准库里的一些数据结构,例如<code class="hljs language-scala"><span class="hljs-type">Seq</span></code>,我们可以利用模式匹配便利地为<code class="hljs language-scala"><span class="hljs-type">Seq</span></code>中我们需要的内容命名</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)
+  <span class="hljs-keyword">val</span> <span class="hljs-type">Seq</span>(a, b, c, d, e) = seq
+  println(a,b,c,d,e) <span class="hljs-comment">//输出 (1,2,3,4,5)</span>
+</code></pre>
+</div></div>
+<p>当然,这种情况需要两边元素个数完全符合才行,如果元素有多或者又少就会出现编译错误</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>)
+  <span class="hljs-keyword">val</span> <span class="hljs-type">Seq</span>(a, b, c, d) = seq
+  <span class="hljs-comment">// Exception in thread "main" scala.MatchError: List(1, 2, 3, 4, 5) (of class scala.collection.immutable.$colon$colon)</span>
+  println(a,b,c,d)
+</code></pre>
+</div></div>
 <h3 id="正则匹配" class="a_section" data-magellan-target="正则匹配">正则匹配<a class="a_hlink" href="#正则匹配"></a></h3>
 <h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
