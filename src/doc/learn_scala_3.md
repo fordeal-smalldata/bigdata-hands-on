@@ -48,7 +48,139 @@
 
 定义`case class`的时候,您不用在`x`和`y`面前增加`val`(因为`case class` 默认都用`val`定义成员),并且会自动给您生成一个实用的`toString`和一个实用的`equals`方法,除此之外,还提供了便利地用旧`case class`局部重新赋值,生成新`case class`的方法(见`point3`),还提供了模式匹配功能,见(`point1x`和`point1y`),模式匹配功能我们接着细说.
 
+### `case class` 匹配
 
+`case class`和模式匹配一起工作能大幅提高代码的表达能力,叙述模式匹配的作用的时候,为了能让场景更贴近实际,我们来引入一个第三方库[json4s](https://github.com/json4s/json4s).我们的习题项目里已经加入了json4s依赖,直接用就可以了,使用方法是在代码中加入以下内容
+
+```scala
+    import org.json4s._
+    import org.json4s.jackson.JsonMethods._
+    implicit val formats = DefaultFormats
+```
+
+在Ammonite中,可以这样加入json4s依赖
+
+```scala
+➜  bigdata-hands-on git:(master) ✗ amm
+Loading...
+Welcome to the Ammonite Repl 1.6.8
+(Scala 2.13.0 Java 1.8.0_181)
+If you like Ammonite, please support our development at www.patreon.com/lihaoyi
+renkai-bigdata-hands-on@     import $ivy.`org.json4s::json4s-jackson:3.6.7`
+import $ivy.$
+
+renkai-bigdata-hands-on@     import org.json4s._
+import org.json4s._
+
+renkai-bigdata-hands-on@     import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.JsonMethods._
+
+renkai-bigdata-hands-on@     implicit val formats = DefaultFormats
+formats: DefaultFormats.type = org.json4s.DefaultFormats$@cbf1997
+```
+
+json4s给出了以下`case class`定义,这些定义可以表达一个完整的json结构
+
+```scala
+//json4s已经定义好了,不用自己定义,导入就行啦
+sealed abstract class JValue
+case object JNothing extends JValue // 'zero' for JValue
+case object JNull extends JValue
+case class JString(s: String) extends JValue
+case class JDouble(num: Double) extends JValue
+case class JDecimal(num: BigDecimal) extends JValue
+case class JInt(num: BigInt) extends JValue
+case class JLong(num: Long) extends JValue
+case class JBool(value: Boolean) extends JValue
+case class JObject(obj: List[JField]) extends JValue
+case class JArray(arr: List[JValue]) extends JValue
+
+type JField = (String, JValue)
+```
+
+假设,现在一项工作目标来了,您需要处理一些别人产生的json,取出其中的一个字段的整型值,然而这些json有些小毛病,有的缺少这个字段,有的这个字段为`null`,有的这个字段是字符串形式(虽然字符串里都是整数),某些编程语言(比如说PHP)在业务复杂之后很容易产生这样格式混乱的数据,我们需要把各种情况都应对了,拿着干净的数据进行进一步的处理.
+
+一开始,您比较傻比较天真,以为数据格式都是好的,写出了一版这样的代码,只考虑了确实有相应字段,并且格式也正确的情况
+
+```scala
+  val messyData = Seq(
+    "{\"should_int\": 1024}",
+    "{\"should_int\": \"1025\"}",
+    "{\"should_int\": null}",
+    "{}"
+  )
+  
+  import org.json4s._
+  import org.json4s.jackson.JsonMethods._
+  implicit val formats = DefaultFormats
+
+  val cleanData = messyData.map {
+    jsStr =>
+      val jsObj = parse(jsStr)
+      (jsObj \ "should_int") match {
+        case JInt(num) => num
+      }
+  }
+```
+
+而当我们尝试编译这段代码的时候,就会收到这样的警告
+
+```scala
+match may not be exhaustive.
+It would fail on the following inputs: JArray(_), JBool(_), JDecimal(_), JDouble(_), JLong(_), JNothing, JNull, JObject(_), JSet(_), JString(_)
+      (jsObj \ "should_int") match {
+             ^
+one warning found
+```
+
+告诉您不要太傻太天真,您在代码里没有考虑的异常情况可能还有很多.让我们仔细考虑下这个warning,思考自己有什么做的不足的地方,发现原来有好多情况没考虑,于是加上了针对所有情况的应对方案(毕竟数据往往是别人生成的,什么不靠谱的事情都可能发生)
+
+```scala
+  val cleanData = messyData.map {
+    jsStr =>
+      val jsObj = parse(jsStr)
+      (jsObj \ "should_int") match {
+        case JInt(num) => num.toInt
+        case JArray(x) => 0
+        case JBool(x) => 0
+        case JDecimal(x) => x.toInt
+        case JDouble(x) => x.toInt
+        case JLong(x) => x.toInt
+        case JNothing => 0
+        case JNull => 0
+        case JObject(x) => 0
+        case JSet(x) => 0
+        case JString(x) => x.toInt
+      }
+  }
+  println(cleanData)
+  //输出 List(1024, 1025, 0, 0)
+```
+
+现在所有情况都能应对了,不过代码稍微冗余了些,您和生产数据的小伙伴沟通了一下,发现除了`JInt`,`JDouble`,`JString`,`JNull`,`JNothing`这些情况是它无心之失产生的,并且数据还有的救之外,其他数据类型都是不应该产生,并且发现了马上要上报异常的,代码就可以改成这样.
+
+```scala
+  val cleanData = messyData.map {
+    jsStr =>
+      val jsObj = parse(jsStr)
+      (jsObj \ "should_int") match {
+        case JInt(num) => num.toInt
+        case JString(x) if x.forall(_.isDigit) => x.toInt
+        case JDouble(x) => x.toInt
+        case JNull => 0
+        case JNothing => 0
+        case x => throw new Exception("不应该运行到这里" + x)
+      }
+  }
+  println(cleanData)
+  //输出 List(1024, 1025, 0, 0)
+```
+
+我们来看下这个场景下`case class`加模式匹配为您做了什么.
+
+首先它通过编译器提示帮助您找出了考虑疏漏的地方,然后针对匹配到的内容,您可以同时便捷的取出`case class`中需要的数据.最后,您可以通过一个通配的情况统一处理您不并关心的其它各种可能性.
+
+### 变长参数匹配
 
 ### 正则匹配
 

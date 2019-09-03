@@ -102,6 +102,128 @@
 </code></pre>
 </div></div>
 <p>定义<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>的时候,您不用在<code class="hljs language-scala">x</code>和<code class="hljs language-scala">y</code>面前增加<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>(因为<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code> 默认都用<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>定义成员),并且会自动给您生成一个实用的<code class="hljs language-scala">toString</code>和一个实用的<code class="hljs language-scala">equals</code>方法,除此之外,还提供了便利地用旧<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>局部重新赋值,生成新<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>的方法(见<code class="hljs language-scala">point3</code>),还提供了模式匹配功能,见(<code class="hljs language-scala">point1x</code>和<code class="hljs language-scala">point1y</code>),模式匹配功能我们接着细说.</p>
+<h3 id="case-class-匹配" class="a_section" data-magellan-target="case-class-匹配"><code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code> 匹配<a class="a_hlink" href="#case-class-匹配"></a></h3>
+<p><code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>和模式匹配一起工作能大幅提高代码的表达能力,叙述模式匹配的作用的时候,为了能让场景更贴近实际,我们来引入一个第三方库<a href="https://github.com/json4s/json4s">json4s</a>.我们的习题项目里已经加入了json4s依赖,直接用就可以了,使用方法是在代码中加入以下内容</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">    <span class="hljs-keyword">import</span> org.json4s._
+    <span class="hljs-keyword">import</span> org.json4s.jackson.<span class="hljs-type">JsonMethods</span>._
+    <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> formats = <span class="hljs-type">DefaultFormats</span>
+</code></pre>
+</div></div>
+<p>在Ammonite中,可以这样加入json4s依赖</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  bigdata-hands-on git:(master) ✗ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-bigdata-hands-on@     <span class="hljs-keyword">import</span> $ivy.`org.json4s::json4s-jackson:<span class="hljs-number">3.6</span><span class="hljs-number">.7</span>`
+<span class="hljs-keyword">import</span> $ivy.$
+
+renkai-bigdata-hands-on@     <span class="hljs-keyword">import</span> org.json4s._
+<span class="hljs-keyword">import</span> org.json4s._
+
+renkai-bigdata-hands-on@     <span class="hljs-keyword">import</span> org.json4s.jackson.<span class="hljs-type">JsonMethods</span>._
+<span class="hljs-keyword">import</span> org.json4s.jackson.<span class="hljs-type">JsonMethods</span>._
+
+renkai-bigdata-hands-on@     <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> formats = <span class="hljs-type">DefaultFormats</span>
+formats: <span class="hljs-type">DefaultFormats</span>.<span class="hljs-keyword">type</span> = org.json4s.<span class="hljs-type">DefaultFormats</span>$<span class="hljs-meta">@cbf</span>1997
+</code></pre>
+</div></div>
+<p>json4s给出了以下<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>定义,这些定义可以表达一个完整的json结构</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-comment">//json4s已经定义好了,不用自己定义,导入就行啦</span>
+<span class="hljs-keyword">sealed</span> <span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">JNothing</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span> <span class="hljs-title">//</span> '<span class="hljs-title">zero</span>' <span class="hljs-title">for</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">JNull</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JString</span>(<span class="hljs-params">s: <span class="hljs-type">String</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JDouble</span>(<span class="hljs-params">num: <span class="hljs-type">Double</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JDecimal</span>(<span class="hljs-params">num: <span class="hljs-type">BigDecimal</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JInt</span>(<span class="hljs-params">num: <span class="hljs-type">BigInt</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JLong</span>(<span class="hljs-params">num: <span class="hljs-type">Long</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JBool</span>(<span class="hljs-params">value: <span class="hljs-type">Boolean</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JObject</span>(<span class="hljs-params">obj: <span class="hljs-type">List</span>[<span class="hljs-type">JField</span>]</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JArray</span>(<span class="hljs-params">arr: <span class="hljs-type">List</span>[<span class="hljs-type">JValue</span>]</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JValue</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">JField</span> </span>= (<span class="hljs-type">String</span>, <span class="hljs-type">JValue</span>)
+</code></pre>
+</div></div>
+<p>假设,现在一项工作目标来了,您需要处理一些别人产生的json,取出其中的一个字段的整型值,然而这些json有些小毛病,有的缺少这个字段,有的这个字段为<code class="hljs language-scala"><span class="hljs-literal">null</span></code>,有的这个字段是字符串形式(虽然字符串里都是整数),某些编程语言(比如说PHP)在业务复杂之后很容易产生这样格式混乱的数据,我们需要把各种情况都应对了,拿着干净的数据进行进一步的处理.</p>
+<p>一开始,您比较傻比较天真,以为数据格式都是好的,写出了一版这样的代码,只考虑了确实有相应字段,并且格式也正确的情况</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> messyData = <span class="hljs-type">Seq</span>(
+    <span class="hljs-string">"{\"should_int\": 1024}"</span>,
+    <span class="hljs-string">"{\"should_int\": \"1025\"}"</span>,
+    <span class="hljs-string">"{\"should_int\": null}"</span>,
+    <span class="hljs-string">"{}"</span>
+  )
+  
+  <span class="hljs-keyword">import</span> org.json4s._
+  <span class="hljs-keyword">import</span> org.json4s.jackson.<span class="hljs-type">JsonMethods</span>._
+  <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">val</span> formats = <span class="hljs-type">DefaultFormats</span>
+
+  <span class="hljs-keyword">val</span> cleanData = messyData.map {
+    jsStr =&gt;
+      <span class="hljs-keyword">val</span> jsObj = parse(jsStr)
+      (jsObj \ <span class="hljs-string">"should_int"</span>) <span class="hljs-keyword">match</span> {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JInt</span>(num) =&gt; num
+      }
+  }
+</code></pre>
+</div></div>
+<p>而当我们尝试编译这段代码的时候,就会收到这样的警告</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-keyword">match</span> may not be exhaustive.
+<span class="hljs-type">It</span> would fail on the following inputs: <span class="hljs-type">JArray</span>(_), <span class="hljs-type">JBool</span>(_), <span class="hljs-type">JDecimal</span>(_), <span class="hljs-type">JDouble</span>(_), <span class="hljs-type">JLong</span>(_), <span class="hljs-type">JNothing</span>, <span class="hljs-type">JNull</span>, <span class="hljs-type">JObject</span>(_), <span class="hljs-type">JSet</span>(_), <span class="hljs-type">JString</span>(_)
+      (jsObj \ <span class="hljs-string">"should_int"</span>) <span class="hljs-keyword">match</span> {
+             ^
+one warning found
+</code></pre>
+</div></div>
+<p>告诉您不要太傻太天真,您在代码里没有考虑的异常情况可能还有很多.让我们仔细考虑下这个warning,思考自己有什么做的不足的地方,发现原来有好多情况没考虑,于是加上了针对所有情况的应对方案(毕竟数据往往是别人生成的,什么不靠谱的事情都可能发生)</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> cleanData = messyData.map {
+    jsStr =&gt;
+      <span class="hljs-keyword">val</span> jsObj = parse(jsStr)
+      (jsObj \ <span class="hljs-string">"should_int"</span>) <span class="hljs-keyword">match</span> {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JInt</span>(num) =&gt; num.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JArray</span>(x) =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JBool</span>(x) =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JDecimal</span>(x) =&gt; x.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JDouble</span>(x) =&gt; x.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JLong</span>(x) =&gt; x.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JNothing</span> =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JNull</span> =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JObject</span>(x) =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JSet</span>(x) =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JString</span>(x) =&gt; x.toInt
+      }
+  }
+  println(cleanData)
+  <span class="hljs-comment">//输出 List(1024, 1025, 0, 0)</span>
+</code></pre>
+</div></div>
+<p>现在所有情况都能应对了,不过代码稍微冗余了些,您和生产数据的小伙伴沟通了一下,发现除了<code class="hljs language-scala"><span class="hljs-type">JInt</span></code>,<code class="hljs language-scala"><span class="hljs-type">JDouble</span></code>,<code class="hljs language-scala"><span class="hljs-type">JString</span></code>,<code class="hljs language-scala"><span class="hljs-type">JNull</span></code>,<code class="hljs language-scala"><span class="hljs-type">JNothing</span></code>这些情况是它无心之失产生的,并且数据还有的救之外,其他数据类型都是不应该产生,并且发现了马上要上报异常的,代码就可以改成这样.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> cleanData = messyData.map {
+    jsStr =&gt;
+      <span class="hljs-keyword">val</span> jsObj = parse(jsStr)
+      (jsObj \ <span class="hljs-string">"should_int"</span>) <span class="hljs-keyword">match</span> {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JInt</span>(num) =&gt; num.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JString</span>(x) <span class="hljs-keyword">if</span> x.forall(_.isDigit) =&gt; x.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JDouble</span>(x) =&gt; x.toInt
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JNull</span> =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JNothing</span> =&gt; <span class="hljs-number">0</span>
+        <span class="hljs-keyword">case</span> x =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">Exception</span>(<span class="hljs-string">"不应该运行到这里"</span> + x)
+      }
+  }
+  println(cleanData)
+  <span class="hljs-comment">//输出 List(1024, 1025, 0, 0)</span>
+</code></pre>
+</div></div>
+<p>我们来看下这个场景下<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>加模式匹配为您做了什么.</p>
+<p>首先它通过编译器提示帮助您找出了考虑疏漏的地方,然后针对匹配到的内容,您可以同时便捷的取出<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>中需要的数据.最后,您可以通过一个通配的情况统一处理您不并关心的其它各种可能性.</p>
+<h3 id="变长参数匹配" class="a_section" data-magellan-target="变长参数匹配">变长参数匹配<a class="a_hlink" href="#变长参数匹配"></a></h3>
 <h3 id="正则匹配" class="a_section" data-magellan-target="正则匹配">正则匹配<a class="a_hlink" href="#正则匹配"></a></h3>
 <h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
@@ -200,6 +322,24 @@
       
       
         <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#case-class-匹配">case class 匹配</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#变长参数匹配">变长参数匹配</a> 
+      
+      
+    </li>
+  
+  
   
     <li>
       
