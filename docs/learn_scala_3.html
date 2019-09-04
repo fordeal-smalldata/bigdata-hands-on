@@ -381,6 +381,49 @@ one warning found
 </div></div>
 </div></div>
 <h2 id="一些语法糖" class="a_section" data-magellan-target="一些语法糖">一些语法糖<a class="a_hlink" href="#一些语法糖"></a></h2>
+<p>Scala是一门语法糖很多的语言,甚至有人把Scala的这种特性称为&quot;语法齁&quot;.善用语法糖能提升代码表达力,但是滥用语法糖会造成代码可读性下降,所以在工作中最好节制使用.这一节主要向大家介绍别人用语法糖写代码的话,我们怎么还原出它的非糖形式(Desugar).</p>
+<h3 id="空格和括号" class="a_section" data-magellan-target="空格和括号">空格和括号<a class="a_hlink" href="#空格和括号"></a></h3>
+<p>Scala社区下主流的一个单元测试框架是<a href="http://www.scalatest.org/">ScalaTest</a>,我们可以看到首页上有这样一篇代码样例</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-keyword">import</span> collection.mutable.<span class="hljs-type">Stack</span>
+<span class="hljs-keyword">import</span> org.scalatest._
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleSpec</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">FlatSpec</span> <span class="hljs-keyword">with</span> <span class="hljs-title">Matchers</span> </span>{
+
+  <span class="hljs-string">"A Stack"</span> should <span class="hljs-string">"pop values in last-in-first-out order"</span> in {
+    <span class="hljs-keyword">val</span> stack = <span class="hljs-keyword">new</span> <span class="hljs-type">Stack</span>[<span class="hljs-type">Int</span>]
+    stack.push(<span class="hljs-number">1</span>)
+    stack.push(<span class="hljs-number">2</span>)
+    stack.pop() should be (<span class="hljs-number">2</span>)
+    stack.pop() should be (<span class="hljs-number">1</span>)
+  }
+
+  it should <span class="hljs-string">"throw NoSuchElementException if an empty stack is popped"</span> in {
+    <span class="hljs-keyword">val</span> emptyStack = <span class="hljs-keyword">new</span> <span class="hljs-type">Stack</span>[<span class="hljs-type">Int</span>]
+    a [<span class="hljs-type">NoSuchElementException</span>] should be thrownBy {
+      emptyStack.pop()
+    } 
+  }
+}
+</code></pre>
+</div></div>
+<p>其中<code class="hljs language-scala">stack.pop() should be (<span class="hljs-number">2</span>)</code>其实用了空格语法糖,去糖化的表达形式是<code class="hljs language-scala">stack.pop().should.be(<span class="hljs-number">2</span>)</code>,Scala对象中简单的单参数或者无参数方法都可以用<code class="hljs language-scala">' '</code>代替<code class="hljs language-scala">'.'</code>(上述代码例子中,语法糖是提升了代码表达能力的,这个应该没人会反对吧😄).</p>
+<p>习惯别的编程语言的玩家有可能忽略一点,那就是容易被认为是'基本操作'的<code class="hljs language-scala">+ - * /</code>等,其实也是语法糖,不管是符号,还是文字,在Scala的世界里都是平等的.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">➜  bigdata-hands-on git:(master) ✗ amm
+<span class="hljs-type">Loading</span>...
+<span class="hljs-type">Welcome</span> to the <span class="hljs-type">Ammonite</span> <span class="hljs-type">Repl</span> <span class="hljs-number">1.6</span><span class="hljs-number">.8</span>
+(<span class="hljs-type">Scala</span> <span class="hljs-number">2.13</span><span class="hljs-number">.0</span> <span class="hljs-type">Java</span> <span class="hljs-number">1.8</span><span class="hljs-number">.0</span>_181)
+<span class="hljs-type">If</span> you like <span class="hljs-type">Ammonite</span>, please support our development at www.patreon.com/lihaoyi
+renkai-bigdata-hands-on@   <span class="hljs-keyword">val</span> shouldBe2 = <span class="hljs-number">1</span> + <span class="hljs-number">1</span>
+shouldBe2: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
+
+renkai-bigdata-hands-on@   <span class="hljs-keyword">val</span> shouldBe2Too = <span class="hljs-number">1.</span>+(<span class="hljs-number">1</span>)
+shouldBe2Too: <span class="hljs-type">Int</span> = <span class="hljs-number">2</span>
+</code></pre>
+</div></div>
+<h3 id="下划线" class="a_section" data-magellan-target="下划线">下划线<a class="a_hlink" href="#下划线"></a></h3>
+<h3 id="for-循环" class="a_section" data-magellan-target="for-循环">for 循环<a class="a_hlink" href="#for-循环"></a></h3>
 <h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>
 <h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
@@ -529,6 +572,35 @@ one warning found
       
          <a href="#一些语法糖">一些语法糖</a> 
       
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#空格和括号">空格和括号</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#下划线">下划线</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#for-循环">for 循环</a> 
+      
+      
+    </li>
+  
+  </ul>
       
     </li>
   

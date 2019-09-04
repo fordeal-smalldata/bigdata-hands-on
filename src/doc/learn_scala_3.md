@@ -359,6 +359,58 @@ object ScalaCallJava {
 
 ## 一些语法糖
 
+Scala是一门语法糖很多的语言,甚至有人把Scala的这种特性称为"语法齁".善用语法糖能提升代码表达力,但是滥用语法糖会造成代码可读性下降,所以在工作中最好节制使用.这一节主要向大家介绍别人用语法糖写代码的话,我们怎么还原出它的非糖形式(Desugar).
+
+### 空格和括号
+
+Scala社区下主流的一个单元测试框架是[ScalaTest](http://www.scalatest.org/),我们可以看到首页上有这样一篇代码样例
+
+```scala
+import collection.mutable.Stack
+import org.scalatest._
+
+class ExampleSpec extends FlatSpec with Matchers {
+
+  "A Stack" should "pop values in last-in-first-out order" in {
+    val stack = new Stack[Int]
+    stack.push(1)
+    stack.push(2)
+    stack.pop() should be (2)
+    stack.pop() should be (1)
+  }
+
+  it should "throw NoSuchElementException if an empty stack is popped" in {
+    val emptyStack = new Stack[Int]
+    a [NoSuchElementException] should be thrownBy {
+      emptyStack.pop()
+    } 
+  }
+}
+```
+
+其中`stack.pop() should be (2)`其实用了空格语法糖,去糖化的表达形式是`stack.pop().should.be(2)`,Scala对象中简单的单参数或者无参数方法都可以用`' '`代替`'.'`(上述代码例子中,语法糖是提升了代码表达能力的,这个应该没人会反对吧😄).
+
+习惯别的编程语言的玩家有可能忽略一点,那就是容易被认为是'基本操作'的`+ - * /`等,其实也是语法糖,不管是符号,还是文字,在Scala的世界里都是平等的.
+
+```scala
+➜  bigdata-hands-on git:(master) ✗ amm
+Loading...
+Welcome to the Ammonite Repl 1.6.8
+(Scala 2.13.0 Java 1.8.0_181)
+If you like Ammonite, please support our development at www.patreon.com/lihaoyi
+renkai-bigdata-hands-on@   val shouldBe2 = 1 + 1
+shouldBe2: Int = 2
+
+renkai-bigdata-hands-on@   val shouldBe2Too = 1.+(1)
+shouldBe2Too: Int = 2
+```
+
+### 下划线
+
+### for 循环
+
+
+
 ## 试试摆脱break
 
 ## 尾递归
