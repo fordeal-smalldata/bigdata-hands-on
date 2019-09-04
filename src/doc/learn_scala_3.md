@@ -599,6 +599,36 @@ Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环�
 
 太好了,预算没有超,大家都拿到了满意的利是,优秀的递归技巧帮助您成为了一名优秀的企业家😄
 
+经过了多年的苦心经营,您的企业人数增加到了10000人,而您仍然保持着每年派利是激励员工的习惯,现在您希望每名员工都拿到万元以上利是了,您的预算也大幅提升到9999元.真是令人难以置信,世界上怎么会有您这么慷慨的企业主呢.您拿出了多年前那份代码,稍作修改,决定计算派利是的规则,结果遭遇了小小的问题.
+
+```java
+    static int maxEmployeeId = 9999;
+
+    public static void sendRedPack(int currentEmployeeId, int price) {
+        int recipientId = (currentEmployeeId + 1) % (maxEmployeeId + 1);
+        System.out.println("员工 " + currentEmployeeId + "发利是给员工" + recipientId + " " + price + " 元");
+        if (currentEmployeeId > 0) sendRedPack(currentEmployeeId - 1, price + 1);
+    }
+
+    public static void main(String[] args) {
+        sendRedPack(maxEmployeeId, maxEmployeeId);
+    }
+    //员工 9999发利是给员工0 9999 元
+    //员工 9998发利是给员工9999 10000 元
+    //员工 9997发利是给员工9998 10001 元
+    //员工 9996发利是给员工9997 10002 元
+    //员工 9995发利是给员工9996 10003 元
+    // .....
+    //Exception in thread "main" java.lang.StackOverflowError
+    //	at demo.AJavaClass.sendRedPack(AJavaClass.java:26)
+```
+
+您居然遭遇了Stack Overflow!
+
+这其实也不难理解,如果您学习过本科数据结构课,您应该知道递归的一个常规实现是利用栈存储信息,递归结束后栈的内容会清空,递归过程中栈的深度可能会很深,如果过深的话就会Stack Overflow.如果您之前没有好好学习过这块内容,可以试试搜索引擎查阅'递归原理',或者看看[这篇文章](https://www.bilibili.com/read/cv840653/).
+
+难道已经没救了吗?优雅的递归模型无法满足您作为万人规模企业主的需求了?实事并不是这样的,还有得救.
+
 ## 习题
 
 牛顿迭代法求平方根
