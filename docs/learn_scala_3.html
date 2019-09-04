@@ -297,6 +297,34 @@ one warning found
 </div></div>
 <p>更多具体用例可以看Scala的<a href="https://www.scala-lang.org/api/2.12.1/scala/util/matching/Regex.html">官方文档</a></p>
 <h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
+<p>Scala的异常处理和Java基本一样,用<code class="hljs language-scala"><span class="hljs-keyword">try</span> {} <span class="hljs-keyword">catch</span> {}</code>块处理就行了,区别只是Scala用模式匹配来捕获具体的错误类型,需要注意的是,<code class="hljs language-scala"><span class="hljs-type">Exception</span></code>的子类基本上不会是<code class="hljs language-scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span></span></code>,而是普通<code class="hljs language-scala"><span class="hljs-class"><span class="hljs-keyword">class</span></span></code>,所以模式匹配在这里只能做到识别不同的<code class="hljs language-scala"><span class="hljs-type">Exception</span></code>类,无法自动提取出<code class="hljs language-scala"><span class="hljs-type">Exception</span></code>的<code class="hljs language-scala">message</code>和<code class="hljs language-scala">cause</code>成员.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NotPredictedException</span>(<span class="hljs-params">message: <span class="hljs-type">String</span> = "", cause: <span class="hljs-type">Throwable</span> = null</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">Exception</span>(<span class="hljs-params">message, cause</span>)</span>
+
+  <span class="hljs-keyword">val</span> emptyArr = <span class="hljs-type">Array</span>.empty[<span class="hljs-type">Int</span>]
+  <span class="hljs-keyword">val</span> div0 = () =&gt; <span class="hljs-number">3</span> / <span class="hljs-number">0</span>
+  <span class="hljs-keyword">val</span> outofBound = () =&gt; emptyArr(<span class="hljs-number">0</span>)
+
+  <span class="hljs-keyword">val</span> justThrow = () =&gt; {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">NotPredictedException</span>(<span class="hljs-string">"一个没有预先知道的错误类型"</span>)
+  }
+  <span class="hljs-keyword">val</span> allErrorFunctions = <span class="hljs-type">Seq</span>(div0, outofBound, justThrow)
+
+  allErrorFunctions.foreach {
+    func =&gt;
+      <span class="hljs-keyword">try</span> {
+        func()
+      } <span class="hljs-keyword">catch</span> {
+        <span class="hljs-keyword">case</span> e: <span class="hljs-type">ArithmeticException</span> =&gt; println(<span class="hljs-string">"算数错误:"</span> + e)
+        <span class="hljs-keyword">case</span> e: <span class="hljs-type">ArrayIndexOutOfBoundsException</span> =&gt; println(<span class="hljs-string">"数组越界: "</span> + e)
+        <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt; println(<span class="hljs-string">"未知错误: "</span> + e)
+      }
+  }
+  <span class="hljs-comment">//算数错误:java.lang.ArithmeticException: / by zero</span>
+  <span class="hljs-comment">//数组越界: java.lang.ArrayIndexOutOfBoundsException: 0</span>
+  <span class="hljs-comment">//未知错误: Playground$NotPredictedException: 一个没有预先知道的错误类型</span>
+</code></pre>
+</div></div>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
 <h2 id="一些语法糖" class="a_section" data-magellan-target="一些语法糖">一些语法糖<a class="a_hlink" href="#一些语法糖"></a></h2>
 <h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>

@@ -268,6 +268,37 @@ one warning found
 
 ## 异常处理
 
+Scala的异常处理和Java基本一样,用`try {} catch {}`块处理就行了,区别只是Scala用模式匹配来捕获具体的错误类型,需要注意的是,`Exception`的子类基本上不会是`case class`,而是普通`class`,所以模式匹配在这里只能做到识别不同的`Exception`类,无法自动提取出`Exception`的`message`和`cause`成员.
+
+```scala
+  class NotPredictedException(message: String = "", cause: Throwable = null) extends Exception(message, cause)
+
+  val emptyArr = Array.empty[Int]
+  val div0 = () => 3 / 0
+  val outofBound = () => emptyArr(0)
+
+  val justThrow = () => {
+    throw new NotPredictedException("一个没有预先知道的错误类型")
+  }
+  val allErrorFunctions = Seq(div0, outofBound, justThrow)
+
+  allErrorFunctions.foreach {
+    func =>
+      try {
+        func()
+      } catch {
+        case e: ArithmeticException => println("算数错误:" + e)
+        case e: ArrayIndexOutOfBoundsException => println("数组越界: " + e)
+        case e: Exception => println("未知错误: " + e)
+      }
+  }
+  //算数错误:java.lang.ArithmeticException: / by zero
+  //数组越界: java.lang.ArrayIndexOutOfBoundsException: 0
+  //未知错误: Playground$NotPredictedException: 一个没有预先知道的错误类型
+```
+
+
+
 ## 调用Java代码
 
 ## 一些语法糖
