@@ -218,6 +218,54 @@ one warning found
 
 ### 正则匹配
 
+正则表达式是从文本中提取数据常用的工具,关于正则表达式的学习,网上有很多优秀的教程和文档大家可以自行查阅.
+
+这里推荐一份教程http://regextutorials.com/](http://regextutorials.com/)
+
+和一份文档[https://docs.python.org/3/library/re.html](https://docs.python.org/3/library/re.html) (没错,就是Python语言的官方文档!你要问我Python有哪点好,我想来想去也就这个正则表达式文档确实不错)
+
+好了,现在假设您已经掌握了基本的正则表达式,想利用Scala模式匹配的特性便利地进行工作,一项工作内容是提取出一个CSS文件中的所有键值对,然后代码就可以这么写
+
+```scala
+  val keyValPattern = "([0-9a-zA-Z- ]+): ([0-9a-zA-Z-#()/. ]+)".r
+
+  val input: String =
+    """background-color: #A03300;
+      |background-image: url(img/header100.png);
+      |background-position: top center;
+      |background-repeat: repeat-x;
+      |background-size: 2160px 108px;
+      |margin: 0;
+      |height: 108px;
+      |width: 100%;""".stripMargin
+
+  val kvMap: Map[String, String] =
+    keyValPattern.findAllIn(input) // 获取所有符合正则表达式的字符串
+      .map {
+        case keyValPattern(x, y) => (x, y) //通过模式匹配获取键值对
+      }
+      .toMap //把Seq[(String,String)]转换为Map[String,String]
+
+  println("CSS中的内容有: ")
+  kvMap.foreach {
+    case (k, v) => //用模式匹配获取
+      println(s"'$k' '$v'")
+  }
+//CSS中的内容有: 
+//'background-image' 'url(img/header100.png)'
+//'margin' '0'
+//'background-repeat' 'repeat-x'
+//'height' '108px'
+//'background-color' '#A03300'
+//'background-size' '2160px 108px'
+//'width' '100'
+//'background-position' 'top center'
+```
+
+更多具体用例可以看Scala的[官方文档](https://www.scala-lang.org/api/2.12.1/scala/util/matching/Regex.html)
+
+
+
 ## 异常处理
 
 ## 调用Java代码
