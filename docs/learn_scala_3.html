@@ -239,6 +239,21 @@ one warning found
   println(a,b,c,d)
 </code></pre>
 </div></div>
+<p>如果我们只是想获得头部的几个元素,而忽略后面的元素怎么办?这个时候可以用一个<code class="hljs language-scala">_*</code>表示接收后面的元素</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>)
+  <span class="hljs-keyword">val</span> <span class="hljs-type">Seq</span>(a, b, c, d, _*) = seq
+  println(a, b, c, d) <span class="hljs-comment">// (1,2,3,4)</span>
+</code></pre>
+</div></div>
+<p>如果后面的元素我们还是想要,而不是简单地丢弃,该怎么办呢,我们可以写一个<code class="hljs language-scala">x @ _*</code>,表示用<code class="hljs language-scala">_*</code>接收后面的元素,<code class="hljs language-scala">x @</code>表示将他们命名为<code class="hljs language-scala">x</code></p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> seq = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>)
+  <span class="hljs-keyword">val</span> <span class="hljs-type">Seq</span>(a, b, c, d, x @ _*) = seq
+  println(a, b, c, d) <span class="hljs-comment">// (1,2,3,4)</span>
+  println(x) <span class="hljs-comment">// List(5, 6)</span>
+</code></pre>
+</div></div>
 <h3 id="正则匹配" class="a_section" data-magellan-target="正则匹配">正则匹配<a class="a_hlink" href="#正则匹配"></a></h3>
 <h2 id="异常处理" class="a_section" data-magellan-target="异常处理">异常处理<a class="a_hlink" href="#异常处理"></a></h2>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>

@@ -199,7 +199,22 @@ one warning found
   println(a,b,c,d)
 ```
 
+如果我们只是想获得头部的几个元素,而忽略后面的元素怎么办?这个时候可以用一个`_*`表示接收后面的元素
 
+```scala
+  val seq = Seq(1, 2, 3, 4, 5, 6)
+  val Seq(a, b, c, d, _*) = seq
+  println(a, b, c, d) // (1,2,3,4)
+```
+
+如果后面的元素我们还是想要,而不是简单地丢弃,该怎么办呢,我们可以写一个`x @ _*`,表示用`_*`接收后面的元素,`x @`表示将他们命名为`x`
+
+```scala
+  val seq = Seq(1, 2, 3, 4, 5, 6)
+  val Seq(a, b, c, d, x @ _*) = seq
+  println(a, b, c, d) // (1,2,3,4)
+  println(x) // List(5, 6)
+```
 
 ### 正则匹配
 
