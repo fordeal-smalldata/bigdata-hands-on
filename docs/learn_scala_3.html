@@ -326,6 +326,60 @@ one warning found
 </code></pre>
 </div></div>
 <h2 id="调用java代码" class="a_section" data-magellan-target="调用java代码">调用Java代码<a class="a_hlink" href="#调用java代码"></a></h2>
+<p>在主流工作环境中,Scala代码和Java代码基本是共生的.当然有少数勇者会用<a href="http://www.scala-native.org">Scala Native</a>把Scala编译成机器码,还有一些勇者会用<a href="https://www.scala-js.org/">Scala.js</a>把Scala编译成JavaScript,我们暂时不考虑这种情况,只考虑在JVM上工作的情况.</p>
+<p>Scala调用Java代码几乎不需要什么额外的成本,如果需要使用现成的第三方Jar包,像在Java项目里一样增加依赖就行了,调用自己写的Java源码,也直接<code class="hljs language-scala"><span class="hljs-keyword">import</span></code>就行,除了不需要在行尾写一个分号,和在Java里调用Java代码几乎没有区别.</p>
+<p>习题集里包含了一些调用样例 <a href="https://github.com/fordeal-smalldata/bigdata-hands-on-quiz/blob/master/src/main/java/demo/AJavaClass.java">Java部分</a> <a href="https://github.com/fordeal-smalldata/bigdata-hands-on-quiz/blob/master/src/main/scala/demo/ScalaCallJava.scala">Scala部分</a></p>
+<p>需要注意的是,Java和Scala的基本数据类型是通用的,但是标准数据结构并不是,如果调用的Java方法参数或者返回值中包含<code class="hljs language-scala"><span class="hljs-type">List</span></code>,<code class="hljs language-scala"><span class="hljs-type">Set</span></code>,<code class="hljs language-scala"><span class="hljs-type">Map</span></code>等类型,需要<code class="hljs language-scala"><span class="hljs-keyword">import</span> scala.collection.<span class="hljs-type">JavaConverters</span>._</code>配合<code class="hljs language-scala">asJava</code>,<code class="hljs language-scala">asScala</code>方法来进行转换,具体例子如下</p>
+<ul class="tabs" data-tabs id="_id0"><li class="tabs-title is-active"><a href="#_id1" aria-selected="true">Java部分</a></li><li class="tabs-title"><a href="#_id2">Scala部分</a></li></ul>
+<div class="tabs-content" data-tabs-content="_id0"><div class="tabs-panel is-active" id="_id1">
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-java"><span class="hljs-keyword">package</span> demo;
+
+
+<span class="hljs-keyword">import</span> java.util.Arrays;
+<span class="hljs-keyword">import</span> java.util.List;
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AJavaClass</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">aJavaMethod</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"这是一个Java方法"</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;Integer&gt; <span class="hljs-title">getJavaList</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printList</span><span class="hljs-params">(List&lt;Integer&gt; list)</span> </span>{
+        System.out.println(<span class="hljs-string">"数组中包含元素:"</span>);
+        list.forEach(System.out::println);
+    }
+}
+
+</code></pre>
+</div></div>
+</div><div class="tabs-panel" id="_id2">
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-keyword">package</span> demo
+
+<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">ScalaCallJava</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+    <span class="hljs-keyword">val</span> jClass = <span class="hljs-keyword">new</span> <span class="hljs-type">AJavaClass</span>
+    jClass.aJavaMethod()
+    <span class="hljs-comment">//输出 这是一个Java方法</span>
+
+    <span class="hljs-keyword">import</span> scala.collection.<span class="hljs-type">JavaConverters</span>._
+    <span class="hljs-keyword">val</span> list = jClass.getJavaList.asScala
+    println(<span class="hljs-string">"转换成Scala的标准库: "</span> + list) <span class="hljs-comment">// 输出 转换成Scala的标准库: Buffer(1, 0, 2, 4)</span>
+    jClass.printList(list.asJava)
+    <span class="hljs-comment">//输出 数组中包含元素:</span>
+    <span class="hljs-comment">//1</span>
+    <span class="hljs-comment">//0</span>
+    <span class="hljs-comment">//2</span>
+    <span class="hljs-comment">//4</span>
+  }
+}
+</code></pre>
+</div></div>
+</div></div>
 <h2 id="一些语法糖" class="a_section" data-magellan-target="一些语法糖">一些语法糖<a class="a_hlink" href="#一些语法糖"></a></h2>
 <h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>
 <h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>

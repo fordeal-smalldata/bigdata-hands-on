@@ -301,6 +301,62 @@ Scala的异常处理和Java基本一样,用`try {} catch {}`块处理就行了,�
 
 ## 调用Java代码
 
+在主流工作环境中,Scala代码和Java代码基本是共生的.当然有少数勇者会用[Scala Native](http://www.scala-native.org)把Scala编译成机器码,还有一些勇者会用[Scala.js](https://www.scala-js.org/)把Scala编译成JavaScript,我们暂时不考虑这种情况,只考虑在JVM上工作的情况.
+
+Scala调用Java代码几乎不需要什么额外的成本,如果需要使用现成的第三方Jar包,像在Java项目里一样增加依赖就行了,调用自己写的Java源码,也直接`import`就行,除了不需要在行尾写一个分号,和在Java里调用Java代码几乎没有区别.
+
+习题集里包含了一些调用样例 [Java部分](https://github.com/fordeal-smalldata/bigdata-hands-on-quiz/blob/master/src/main/java/demo/AJavaClass.java) [Scala部分](https://github.com/fordeal-smalldata/bigdata-hands-on-quiz/blob/master/src/main/scala/demo/ScalaCallJava.scala)
+
+需要注意的是,Java和Scala的基本数据类型是通用的,但是标准数据结构并不是,如果调用的Java方法参数或者返回值中包含`List`,`Set`,`Map`等类型,需要`import scala.collection.JavaConverters._`配合`asJava`,`asScala`方法来进行转换,具体例子如下
+
+```java tab=Java部分
+package demo;
+
+
+import java.util.Arrays;
+import java.util.List;
+
+public class AJavaClass {
+    public void aJavaMethod() {
+        System.out.println("这是一个Java方法");
+    }
+
+    public List<Integer> getJavaList() {
+        return Arrays.asList(1, 0, 2, 4);
+    }
+
+    public void printList(List<Integer> list) {
+        System.out.println("数组中包含元素:");
+        list.forEach(System.out::println);
+    }
+}
+
+```
+
+```scala tab=Scala部分
+package demo
+
+object ScalaCallJava {
+  def main(args: Array[String]): Unit = {
+    val jClass = new AJavaClass
+    jClass.aJavaMethod()
+    //输出 这是一个Java方法
+
+    import scala.collection.JavaConverters._
+    val list = jClass.getJavaList.asScala
+    println("转换成Scala的标准库: " + list) // 输出 转换成Scala的标准库: Buffer(1, 0, 2, 4)
+    jClass.printList(list.asJava)
+    //输出 数组中包含元素:
+    //1
+    //0
+    //2
+    //4
+  }
+}
+```
+
+
+
 ## 一些语法糖
 
 ## 试试摆脱break
