@@ -407,6 +407,81 @@ shouldBe2Too: Int = 2
 
 ### 下划线
 
+下划线是Scala代码中的常客,它在不同的上下文中出现代表着不同的含义.
+
+* 含义一:我全都要
+
+我全都要的含义出现在`import`场景下,Java中的`import java.time.*`操作等价于Scala的`import java.time._`原因[这里](https://softwareengineering.stackexchange.com/questions/194686/why-does-scala-use-the-operator-for-package-import-instead-of-as-in-java)有介绍
+
+* 含义二:我知道你有,但我不在乎
+
+这种场景常见于模式匹配中,您在获得一个`case class`后可能只对其中的某些成员感兴趣,另一些成员当时就丢弃了,但是为了模式匹配要用`_`做占位符,Scala官方网站的[教程](https://docs.scala-lang.org/tour/pattern-matching.html)中就能找到例子,贴于此处
+
+```scala
+abstract class Notification
+
+case class Email(sender: String, title: String, body: String) extends Notification
+
+case class SMS(caller: String, message: String) extends Notification
+
+case class VoiceRecording(contactName: String, link: String) extends Notification
+
+def showNotification(notification: Notification): String = {
+  notification match {
+    case Email(sender, title, _) => // <- 这里不关心body,所以用_做了占位符
+      s"You got an email from $sender with title: $title"
+    case SMS(number, message) =>
+      s"You got an SMS from $number! Message: $message"
+    case VoiceRecording(name, link) =>
+      s"you received a Voice Recording from $name! Click the link to hear it: $link"
+  }
+}
+
+val someSms = SMS("12345", "Are you there?")
+val someVoiceRecording = VoiceRecording("Tom", "voicerecording.org/id/123")
+
+println(showNotification(someSms))  // prints You got an SMS from 12345! Message: Are you there?
+
+println(showNotification(someVoiceRecording))  // you received a Voice Recording from Tom! Click the link to hear it: voicerecording.org/id/123
+```
+
+
+
+* 含义三:给一个默认值
+
+用`_`赋值给某种类型的变量,相应变量会被赋值为该类型的默认值
+
+```scala
+var aInt: Int = _ // aInt: Int = 0
+var aDouble: Double = _ // aDouble: Double = 0.0
+var aString: String = _ // aString: String = null
+```
+
+* 含义四:跑龙套
+
+在工作中,我们可能经常需要调用一些高阶函数给数据做简单的处理,但是我们懒得为那些高阶函数起变量名(起变量名是编程中最大的困难😓),这个时候`_`能为您稍许解决一些困扰
+
+```scala
+  val strInts = Seq("1", "2", "3")
+  // strInts: Seq[String] = List("1", "2", "3")
+  val ints1 = strInts.map(_.toInt)
+  // ints1: Seq[Int] = List(1, 2, 3)
+  val ints2 = strInts.map(x => x.toInt)
+  //和上面的形式是等价的
+  // ints2: Seq[Int] = List(1, 2, 3)
+```
+
+两个下划线对应简单的双参数函数场景(用到的机会不多,但是看到的容易懵)
+
+```scala
+  val oneTwoThree = Seq(1, 2, 3)
+	//oneTwoThree: Seq[Int] = List(1, 2, 3)
+  val sum1 = oneTwoThree.reduce(_ + _)
+	//sum1: Int = 6
+  val sum2 = oneTwoThree.reduce((x, y) => x + y)
+	//sum2: Int = 6 和上方 _ + _ 等价
+```
+
 ### for 循环
 
 
