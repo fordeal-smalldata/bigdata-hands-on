@@ -569,7 +569,34 @@ println(showNotification(someVoiceRecording))  <span class="hljs-comment">// you
 </code></pre>
 </div></div>
 <p>我们用<code class="hljs language-scala"><span class="hljs-type">Iterator</span>.iterate</code>生成了所有整数列表,注意,<code class="hljs language-scala"><span class="hljs-type">Iterator</span>.iterate</code>只是为您定义了获得所有整数的方法,并没有真的把所有整数都产生出来放在内存里(如果是那样的话内存就爆了😨),真的把所有符合要求的数据存下来的代码是<code class="hljs language-scala">toVector</code>,其他条件都是为这个<code class="hljs language-scala">toVector</code>服务的.您不需要用代码声明&quot;我要100个,到了之后程序就停下&quot;,您只要说&quot;我要100个&quot;,停下的事情它自己会做.</p>
-<h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>
+<h2 id="递归和尾递归" class="a_section" data-magellan-target="递归和尾递归">递归和尾递归<a class="a_hlink" href="#递归和尾递归"></a></h2>
+<p>递归能够帮助我们简洁的表达很多概念.假设您是一名企业主,您的企业包括您自己有100名员工,您没有上一名企业主那样迷信,所以您企业里的员工ID是0~99(0号就是您自己).现在春节刚过去,员工都斗志满满地要来公司上班啦,为了激励员工,您决定让每个员工都获得不少于一百元的开门<a href="https://baike.baidu.com/item/%E5%88%A9%E6%98%AF/6676492">利是</a>.可是作为一名创业阶段的企业主,您囊中羞涩,您的预算总共只有99元.</p>
+<p>于是您想了个主意,定了这样一个利是规则,既能满足您最初的初心,又不会超预算.您的方案是这样的,从编号最大的员工开始,先发n元利是给比自己工号大1的人(如果没有这个人,就发给老板),然后工号比自己小1的人发n+1元给自己,这样一直循环到工号0为止.刚才说了,希望大家都能拿到百元以上利是,可是预算总量有限,那老板自己委屈点,n就设置为99吧.</p>
+<p>我们先看看相应的Java代码实现</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-java">    <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> maxEmployeeId = <span class="hljs-number">99</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sendRedPack</span><span class="hljs-params">(<span class="hljs-keyword">int</span> currentEmployeeId, <span class="hljs-keyword">int</span> price)</span> </span>{
+        <span class="hljs-keyword">int</span> recipientId = (currentEmployeeId + <span class="hljs-number">1</span>) % maxEmployeeId;
+        System.out.println(<span class="hljs-string">"员工 "</span> + currentEmployeeId + <span class="hljs-string">"发利是给员工"</span> + recipientId + <span class="hljs-string">" "</span> + price + <span class="hljs-string">" 元"</span>);
+        <span class="hljs-keyword">if</span> (currentEmployeeId &gt; <span class="hljs-number">0</span>) sendRedPack(currentEmployeeId - <span class="hljs-number">1</span>, price + <span class="hljs-number">1</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        sendRedPack(<span class="hljs-number">99</span>,<span class="hljs-number">99</span>);
+    }
+        <span class="hljs-comment">//员工 99发利是给员工0 99 元</span>
+        <span class="hljs-comment">//员工 98发利是给员工99 100 元</span>
+        <span class="hljs-comment">//员工 97发利是给员工98 101 元</span>
+        <span class="hljs-comment">//员工 96发利是给员工97 102 元</span>
+        <span class="hljs-comment">//...</span>
+        <span class="hljs-comment">//员工 3发利是给员工4 195 元</span>
+        <span class="hljs-comment">//员工 2发利是给员工3 196 元</span>
+        <span class="hljs-comment">//员工 1发利是给员工2 197 元</span>
+        <span class="hljs-comment">//员工 0发利是给员工1 198 元</span>
+</code></pre>
+</div></div>
+<p>太好了,预算没有超,大家都拿到了满意的利是,优秀的递归技巧帮助您成为了一名优秀的企业家😄</p>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
 <p>牛顿迭代法求平方根</p>
 
@@ -761,7 +788,7 @@ println(showNotification(someVoiceRecording))  <span class="hljs-comment">// you
   
     <li>
       
-         <a href="#尾递归">尾递归</a> 
+         <a href="#递归和尾递归">递归和尾递归</a> 
       
       
     </li>
