@@ -495,6 +495,47 @@ println(showNotification(someVoiceRecording))  <span class="hljs-comment">// you
 </code></pre>
 </div></div>
 <h3 id="for-循环" class="a_section" data-magellan-target="for-循环">for 循环<a class="a_hlink" href="#for-循环"></a></h3>
+<p>Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成<code class="hljs language-scala">foreach</code>,<code class="hljs language-scala">map</code>和<code class="hljs language-scala">flatMap</code>,下面我们给出一些例子.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> oneTwoThree = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-keyword">for</span> (num &lt;- oneTwoThree) {
+    println(num)
+  }
+  <span class="hljs-comment">/*输出
+  1
+  2
+  3
+   */</span>
+  
+  oneTwoThree.foreach {
+    num =&gt; println(num)
+  }
+  <span class="hljs-comment">/*和上方代码等价,输出
+  1
+  2
+  3
+ */</span>
+</code></pre>
+</div></div>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> xPoints = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-keyword">val</span> yPoints = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+  <span class="hljs-keyword">val</span> cartesianProd1 =
+    <span class="hljs-keyword">for</span> (x &lt;- xPoints; y &lt;- yPoints) <span class="hljs-keyword">yield</span> (x, y)
+  println(cartesianProd1)
+  <span class="hljs-comment">// List((1,1), (1,2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3))</span>
+  <span class="hljs-keyword">val</span> cartesianProd2 =
+    xPoints.flatMap {
+      x =&gt;
+        yPoints.map {
+          y =&gt; (x, y)
+        }
+    }
+  println(cartesianProd2)
+  <span class="hljs-comment">//和上方的for ... 等价</span>
+  <span class="hljs-comment">//List((1,1), (1,2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3))</span>
+</code></pre>
+</div></div>
 <h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>
 <h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>

@@ -484,6 +484,48 @@ var aString: String = _ // aString: String = null
 
 ### for 循环
 
+Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成`foreach`,`map`和`flatMap`,下面我们给出一些例子.
+
+```scala
+  val oneTwoThree = Seq(1, 2, 3)
+  for (num <- oneTwoThree) {
+    println(num)
+  }
+  /*输出
+  1
+  2
+  3
+   */
+  
+  oneTwoThree.foreach {
+    num => println(num)
+  }
+  /*和上方代码等价,输出
+  1
+  2
+  3
+ */
+```
+
+```scala
+  val xPoints = Seq(1, 2, 3)
+  val yPoints = Seq(1, 2, 3)
+  val cartesianProd1 =
+    for (x <- xPoints; y <- yPoints) yield (x, y)
+  println(cartesianProd1)
+  // List((1,1), (1,2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3))
+  val cartesianProd2 =
+    xPoints.flatMap {
+      x =>
+        yPoints.map {
+          y => (x, y)
+        }
+    }
+  println(cartesianProd2)
+  //和上方的for ... 等价
+  //List((1,1), (1,2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3))
+```
+
 
 
 ## 试试摆脱break
