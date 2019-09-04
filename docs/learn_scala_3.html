@@ -495,7 +495,7 @@ println(showNotification(someVoiceRecording))  <span class="hljs-comment">// you
 </code></pre>
 </div></div>
 <h3 id="for-循环" class="a_section" data-magellan-target="for-循环">for 循环<a class="a_hlink" href="#for-循环"></a></h3>
-<p>Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成<code class="hljs language-scala">foreach</code>,<code class="hljs language-scala">map</code>和<code class="hljs language-scala">flatMap</code>,下面我们给出一些例子.</p>
+<p>Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成<code class="hljs language-scala">foreach</code>,<code class="hljs language-scala">map</code>和<code class="hljs language-scala">flatMap</code>,下面我们给出一些例子.更详细些的介绍可以看<a href="https://docs.scala-lang.org/tutorials/FAQ/yield.html">官方文档</a>.</p>
 <div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
 <pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> oneTwoThree = <span class="hljs-type">Seq</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
   <span class="hljs-keyword">for</span> (num &lt;- oneTwoThree) {
@@ -537,6 +537,38 @@ println(showNotification(someVoiceRecording))  <span class="hljs-comment">// you
 </code></pre>
 </div></div>
 <h2 id="试试摆脱break" class="a_section" data-magellan-target="试试摆脱break">试试摆脱break<a class="a_hlink" href="#试试摆脱break"></a></h2>
+<p><code class="hljs language-scala"><span class="hljs-keyword">break</span></code>关键词是很多编程语言内置的特性,它在流程控制中几乎是一个必要的关键词,可以说没有<code class="hljs language-scala"><span class="hljs-keyword">break</span></code>就没办法工作…但是当我们的视角从工作流变成数据的时候,<code class="hljs language-scala"><span class="hljs-keyword">break</span></code>就显得并没有需要了,Scala甚至没有默认提供<code class="hljs language-scala"><span class="hljs-keyword">break</span></code>,而是您需要导入才能使用.</p>
+<p>我们来考虑一下这样一个场景,您是一名企业主,您的事业蒸蒸日上,不断地有人来投奔您要加入您的企业.这个时候为了方便记录员工信息,您就需要为员工都赋予一个工号.根据历史经验,企业主多多少少都是迷信的人,您希望员工工号都必须至少有一个6或8,并且不能有4,那么前100名员工的工号会是多少呢?让我们试试用工作流控制的方式来获得这些工号.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">import</span> scala.util.control.<span class="hljs-type">Breaks</span>._
+
+  <span class="hljs-keyword">var</span> employeeIds = <span class="hljs-type">Vector</span>.empty[<span class="hljs-type">Int</span>]
+
+  breakable {
+    <span class="hljs-keyword">for</span> (id &lt;- <span class="hljs-number">0</span> to <span class="hljs-type">Int</span>.<span class="hljs-type">MaxValue</span>) {
+      <span class="hljs-keyword">val</span> idStr = id.toString
+      <span class="hljs-keyword">if</span> ((idStr.contains('<span class="hljs-number">6</span>') || idStr.contains('<span class="hljs-number">8</span>')) &amp;&amp; !idStr.contains('<span class="hljs-number">4</span>')) employeeIds :+= id
+      <span class="hljs-keyword">if</span> (employeeIds.size &gt;= <span class="hljs-number">100</span>) <span class="hljs-keyword">break</span>
+    }
+  }
+  
+  println(employeeIds)
+  <span class="hljs-comment">// Vector(6, 8, 16, 18, 26, 28, 36, 38, 56, 58, 60, 61 ...</span>
+</code></pre>
+</div></div>
+<p>这段代码工作良好,结果正确.不过从数据处理的角度看,多了一些不必要的噪音(我只是想要数据啊,为什么要关心你的控制流呢),我们来看看只关心数据流的情况下代码是什么样的</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-keyword">val</span> employeeIds =
+    <span class="hljs-type">Iterator</span>.iterate(<span class="hljs-number">0</span>)(_ + <span class="hljs-number">1</span>).filter {
+      id =&gt;
+        <span class="hljs-keyword">val</span> idStr = id.toString
+        (idStr.contains('<span class="hljs-number">6</span>') || idStr.contains('<span class="hljs-number">8</span>')) &amp;&amp; !idStr.contains('<span class="hljs-number">4</span>')
+    }.take(<span class="hljs-number">100</span>).toVector
+  println(employeeIds)
+	<span class="hljs-comment">// Vector(6, 8, 16, 18, 26, 28, 36, 38, 56, 58, 60, 61 ...</span>
+</code></pre>
+</div></div>
+<p>我们用<code class="hljs language-scala"><span class="hljs-type">Iterator</span>.iterate</code>生成了所有整数列表,注意,<code class="hljs language-scala"><span class="hljs-type">Iterator</span>.iterate</code>只是为您定义了获得所有整数的方法,并没有真的把所有整数都产生出来放在内存里(如果是那样的话内存就爆了😨),真的把所有符合要求的数据存下来的代码是<code class="hljs language-scala">toVector</code>,其他条件都是为这个<code class="hljs language-scala">toVector</code>服务的.您不需要用代码声明&quot;我要100个,到了之后程序就停下&quot;,您只要说&quot;我要100个&quot;,停下的事情它自己会做.</p>
 <h2 id="尾递归" class="a_section" data-magellan-target="尾递归">尾递归<a class="a_hlink" href="#尾递归"></a></h2>
 <h2 id="习题" class="a_section" data-magellan-target="习题">习题<a class="a_hlink" href="#习题"></a></h2>
 <p>牛顿迭代法求平方根</p>

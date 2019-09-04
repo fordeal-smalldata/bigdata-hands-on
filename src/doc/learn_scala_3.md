@@ -484,7 +484,7 @@ var aString: String = _ // aString: String = null
 
 ### for 循环
 
-Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成`foreach`,`map`和`flatMap`,下面我们给出一些例子.
+Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环代码会根据实际情况被编译成`foreach`,`map`和`flatMap`,下面我们给出一些例子.更详细些的介绍可以看[官方文档](https://docs.scala-lang.org/tutorials/FAQ/yield.html).
 
 ```scala
   val oneTwoThree = Seq(1, 2, 3)
@@ -529,6 +529,42 @@ Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环�
 
 
 ## 试试摆脱break
+
+`break`关键词是很多编程语言内置的特性,它在流程控制中几乎是一个必要的关键词,可以说没有`break`就没办法工作…但是当我们的视角从工作流变成数据的时候,`break`就显得并没有需要了,Scala甚至没有默认提供`break`,而是您需要导入才能使用.
+
+我们来考虑一下这样一个场景,您是一名企业主,您的事业蒸蒸日上,不断地有人来投奔您要加入您的企业.这个时候为了方便记录员工信息,您就需要为员工都赋予一个工号.根据历史经验,企业主多多少少都是迷信的人,您希望员工工号都必须至少有一个6或8,并且不能有4,那么前100名员工的工号会是多少呢?让我们试试用工作流控制的方式来获得这些工号.
+
+```scala
+  import scala.util.control.Breaks._
+
+  var employeeIds = Vector.empty[Int]
+
+  breakable {
+    for (id <- 0 to Int.MaxValue) {
+      val idStr = id.toString
+      if ((idStr.contains('6') || idStr.contains('8')) && !idStr.contains('4')) employeeIds :+= id
+      if (employeeIds.size >= 100) break
+    }
+  }
+  
+  println(employeeIds)
+  // Vector(6, 8, 16, 18, 26, 28, 36, 38, 56, 58, 60, 61 ...
+```
+
+这段代码工作良好,结果正确.不过从数据处理的角度看,多了一些不必要的噪音(我只是想要数据啊,为什么要关心你的控制流呢),我们来看看只关心数据流的情况下代码是什么样的
+
+```scala
+  val employeeIds =
+    Iterator.iterate(0)(_ + 1).filter {
+      id =>
+        val idStr = id.toString
+        (idStr.contains('6') || idStr.contains('8')) && !idStr.contains('4')
+    }.take(100).toVector
+  println(employeeIds)
+	// Vector(6, 8, 16, 18, 26, 28, 36, 38, 56, 58, 60, 61 ...
+```
+
+我们用`Iterator.iterate`生成了所有整数列表,注意,`Iterator.iterate`只是为您定义了获得所有整数的方法,并没有真的把所有整数都产生出来放在内存里(如果是那样的话内存就爆了😨),真的把所有符合要求的数据存下来的代码是`toVector`,其他条件都是为这个`toVector`服务的.您不需要用代码声明"我要100个,到了之后程序就停下",您只要说"我要100个",停下的事情它自己会做.
 
 ## 尾递归
 
