@@ -661,7 +661,7 @@ Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环�
 
 在IDEA中,如果您的递归符合尾递归需求,您定义的递归函数左侧会出现一个带箭头的小圆圈.如果您的递归只是普通递归,您定义的函数左侧会出现一个蚊香形状.
 
-![image-20190905123058619](/Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/recursive_example.png)
+![image-20190905123058619](images/recursive_example.png)
 
 ## 习题
 
