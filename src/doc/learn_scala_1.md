@@ -47,6 +47,38 @@ Compilation Failed
 
 您可以看到,定义一个`val a = 3`,编译器会自动推导出`a`的类型是`Int`,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的`val b: Int = 3`的效果和`val a = 3`效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生.  
 
+### 特殊类型介绍
+
+![Scala Type Hierarchy](/Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/unified-types-diagram.svg)
+
+上图是一个Scala类型体系的介绍图,图片来源在[官方网站](https://docs.scala-lang.org/tour/unified-types.html).
+
+我们在这里额外解释一些特殊类型:
+
+`Unit`:
+
+​	Unit`大体上相当于java中的`void`,将一个表达式或者函数的返回值设置为`Unit`,表示您不关心它们的返回值是什么.
+
+`Nothing`:
+
+​	`Nothing`是所有类型的子类,就我目前的工作经验而言,`Nothing`类的主要作用是辅助您设计代码结构.Scala为您内置了这样一个方法
+
+```scala
+  def ??? : Nothing = throw new NotImplementedError
+```
+
+当您想做些代码原型设计的时候,需要定义一些函数的参数返回值类型,但还暂时不知道怎么写实现的时候,就可以用上它.比如您想设计一个抽奖系统,但是暂时还不知道怎么获得具体的范围人群,也不知道抽奖算法要怎么设计.就可以这样写
+
+```scala
+  def getEmployeeSet(): Set[String] = ???
+
+  def getLuckyOne(employeeSet: Set[String]): String = ???
+
+  getLuckyOne(getEmployeeSet())
+```
+
+这些代码能通过编译,但是运行的时候会抛异常.这种做法很适合在给一个已经存在的项目增添代码的时候,做到既能提交局部成果到代码仓库,又不破坏代码的可编译性.
+
 ## 表达式
 
 如您所见,Scala中的`val`可以在Java中找到一个大致对应的关键词`final`,但是在实际工作经验中,Scala中的`val`出现的频率要远高于Java中的`final`.为什么会这样?这里就要提到一个概念叫表达式([Expression](https://en.wikipedia.org/wiki/Expression_(computer_science))). 在Java里,基础的[数学运算](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/expressions.html)是表达式,[lambda表达式](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)是表达式.还有什么呢?好像没有了.

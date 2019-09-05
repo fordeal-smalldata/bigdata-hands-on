@@ -104,6 +104,28 @@ cmd2.sc:<span class="hljs-number">1</span>: <span class="hljs-class"><span class
 </code></pre>
 </div></div>
 <p>您可以看到,定义一个<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>,编译器会自动推导出<code class="hljs language-scala">a</code>的类型是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的<code class="hljs language-scala"><span class="hljs-keyword">val</span> b: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span></code>的效果和<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生.</p>
+<h3 id="特殊类型介绍" class="a_section" data-magellan-target="特殊类型介绍">特殊类型介绍<a class="a_hlink" href="#特殊类型介绍"></a></h3>
+<p><img src="Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/unified-types-diagram.svg" alt="Scala Type Hierarchy" /></p>
+<p>上图是一个Scala类型体系的介绍图,图片来源在<a href="https://docs.scala-lang.org/tour/unified-types.html">官方网站</a>.</p>
+<p>我们在这里额外解释一些特殊类型:</p>
+<p><code class="hljs language-scala"><span class="hljs-type">Unit</span></code>:</p>
+<p>​	Unit<code class="hljs language-scala">大体上相当于java中的</code>void<code class="hljs language-scala">,将一个表达式或者函数的返回值设置为</code>Unit`,表示您不关心它们的返回值是什么.</p>
+<p><code class="hljs language-scala"><span class="hljs-type">Nothing</span></code>:</p>
+<p>​	<code class="hljs language-scala"><span class="hljs-type">Nothing</span></code>是所有类型的子类,就我目前的工作经验而言,<code class="hljs language-scala"><span class="hljs-type">Nothing</span></code>类的主要作用是辅助您设计代码结构.Scala为您内置了这样一个方法</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">???</span> </span>: <span class="hljs-type">Nothing</span> = <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">NotImplementedError</span>
+</code></pre>
+</div></div>
+<p>当您想做些代码原型设计的时候,需要定义一些函数的参数返回值类型,但还暂时不知道怎么写实现的时候,就可以用上它.比如您想设计一个抽奖系统,但是暂时还不知道怎么获得具体的范围人群,也不知道抽奖算法要怎么设计.就可以这样写</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getEmployeeSet</span></span>(): <span class="hljs-type">Set</span>[<span class="hljs-type">String</span>] = ???
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getLuckyOne</span></span>(employeeSet: <span class="hljs-type">Set</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">String</span> = ???
+
+  getLuckyOne(getEmployeeSet())
+</code></pre>
+</div></div>
+<p>这些代码能通过编译,但是运行的时候会抛异常.这种做法很适合在给一个已经存在的项目增添代码的时候,做到既能提交局部成果到代码仓库,又不破坏代码的可编译性.</p>
 <h2 id="表达式" class="a_section" data-magellan-target="表达式">表达式<a class="a_hlink" href="#表达式"></a></h2>
 <p>如您所见,Scala中的<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>可以在Java中找到一个大致对应的关键词<code class="hljs language-scala"><span class="hljs-keyword">final</span></code>,但是在实际工作经验中,Scala中的<code class="hljs language-scala"><span class="hljs-keyword">val</span></code>出现的频率要远高于Java中的<code class="hljs language-scala"><span class="hljs-keyword">final</span></code>.为什么会这样?这里就要提到一个概念叫表达式(<a href="https://en.wikipedia.org/wiki/Expression_(computer_science)">Expression</a>). 在Java里,基础的<a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/expressions.html">数学运算</a>是表达式,<a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">lambda表达式</a>是表达式.还有什么呢?好像没有了.</p>
 <p>在Scala里,情况就不太一样了,所有代码都会是表达式.举个例子,假设我们在没有充分利用Scala表达式特性的情况下想要根据不同的网络环境定义不一样的域名,可以这样写</p>
@@ -235,6 +257,17 @@ cmd2.sc:<span class="hljs-number">1</span>: <span class="hljs-class"><span class
       
          <a href="#类型">类型</a> 
       
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#特殊类型介绍">特殊类型介绍</a> 
+      
+      
+    </li>
+  
+  </ul>
       
     </li>
   
