@@ -24,4 +24,4 @@ Coursera课程 [Functional Programming in Scala](https://www.coursera.org/specia
 
 [李浩毅的博客](http://www.lihaoyi.com/):
 
-这位老哥是Scala深度用户,创造了很多群众在现实生活中用得到的Scala库和工具(见[Github](https://github.com/lihaoyi)),而且有很多优秀的方法论输出.比如这个视频:[Four Facets of Good Open-Source Libraries](http://www.lihaoyi.com/post/TalksIveGiven.html#four-facets-of-good-open-source-libraries),这篇文章[What's Functional Programming All About](http://www.lihaoyi.com/post/WhatsFunctionalProgrammingAllAbout.html)等等.
+这位老哥是Scala深度用户,创造了很多群众在现实生活中用得到的Scala库和工具(比如[requests-scala](https://github.com/lihaoyi/requests-scala),更多内容见[Github](https://github.com/lihaoyi)),而且有很多优秀的方法论输出.比如这个视频:[Four Facets of Good Open-Source Libraries](http://www.lihaoyi.com/post/TalksIveGiven.html#four-facets-of-good-open-source-libraries),这篇文章[What's Functional Programming All About](http://www.lihaoyi.com/post/WhatsFunctionalProgrammingAllAbout.html)等等.
