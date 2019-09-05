@@ -18,7 +18,7 @@ Coursera课程 [Functional Programming in Scala](https://www.coursera.org/specia
 
 按照我本人的学习经验,中国大学里的编程教育基本都是不完整的.程序设计是关于抽象和组合的艺术,您的大学里如果没有教这些(很有可能没有),这本书能教您.这本书让我感受到接受了完整的编程教育.
 
-[程序设计方法(也就是HTDP)](https://htdp.org/):
+[程序设计方法(也就是HTDP)](https://book.douban.com/subject/1140942/):
 
 这本书的英文版可以在网上[免费阅读](https://htdp.org/),推荐英文不困难的人阅读.SICP虽然经典,但是很久没更新了,而且它的运行环境在现代电脑上已经运行不起来啦😭.HTDP我觉得可以认为是SICP的精神续作,而且它的代码都是可以在最新的Windows,Linux,Mac电脑上跑的,推荐从这本入手学习程序设计.
 
