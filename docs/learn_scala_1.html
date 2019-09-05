@@ -105,7 +105,7 @@ cmd2.sc:<span class="hljs-number">1</span>: <span class="hljs-class"><span class
 </div></div>
 <p>您可以看到,定义一个<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>,编译器会自动推导出<code class="hljs language-scala">a</code>的类型是<code class="hljs language-scala"><span class="hljs-type">Int</span></code>,如果您希望在代码里指定类型好在阅读源码的时候获得一些安全感,Scala当然也是支持的<code class="hljs language-scala"><span class="hljs-keyword">val</span> b: <span class="hljs-type">Int</span> = <span class="hljs-number">3</span></code>的效果和<code class="hljs language-scala"><span class="hljs-keyword">val</span> a = <span class="hljs-number">3</span></code>效果一样,区别在于编译器不再为您做自动推导而是做一个检查类型是否匹配的工作,如果类型匹配没有问题,则相安无事.如果类型匹配出问题了,编译器会在编译期就抛出错误,从而避免更大的损失在运行期发生.</p>
 <h3 id="特殊类型介绍" class="a_section" data-magellan-target="特殊类型介绍">特殊类型介绍<a class="a_hlink" href="#特殊类型介绍"></a></h3>
-<p><img src="Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/unified-types-diagram.svg" alt="Scala Type Hierarchy" /></p>
+<p><img src="Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/unified-types-diagram.png" alt="Scala Type Hierarchy" /></p>
 <p>上图是一个Scala类型体系的介绍图,图片来源在<a href="https://docs.scala-lang.org/tour/unified-types.html">官方网站</a>.</p>
 <p>我们在这里额外解释一些特殊类型:</p>
 <p><code class="hljs language-scala"><span class="hljs-type">Unit</span></code>:</p>
