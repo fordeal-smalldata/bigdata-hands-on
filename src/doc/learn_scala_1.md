@@ -49,7 +49,7 @@ Compilation Failed
 
 ### 特殊类型介绍
 
-![Scala Type Hierarchy](/Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/unified-types-diagram.png)
+![Scala Type Hierarchy](images/unified-types-diagram.svg)
 
 上图是一个Scala类型体系的介绍图,图片来源在[官方网站](https://docs.scala-lang.org/tour/unified-types.html).
 
