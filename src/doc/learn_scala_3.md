@@ -629,6 +629,40 @@ Scala里不光操作符是语法糖,for循环也都是语法糖来的,for循环�
 
 难道已经没救了吗?优雅的递归模型无法满足您作为万人规模企业主的需求了?实事并不是这样的,还有得救.
 
+这里要提到一个概念叫做[尾递归](https://zh.wikipedia.org/wiki/%E5%B0%BE%E8%B0%83%E7%94%A8),关于什么是尾递归可以看 [群众讨论1](https://www.zhihu.com/question/20761771),[群众讨论2](https://stackoverflow.com/questions/33923/what-is-tail-recursion).
+
+反正我们现在的这个递归是符合尾递归的概念的,不过针对尾递归的情况,Java编译器并没有为我们做优化,也就是说在Java环境下,尾递归和普通递归并没有什么区别.但是Scala是能对尾递归做优化的,我们来看看相应的Scala版本.
+
+```scala
+  val maxEmployeeId = 9999
+
+  def sendRedPack(currentEmployeeId: Int, price: Int): Unit = {
+    val recipientId = (currentEmployeeId + 1) % (maxEmployeeId + 1)
+    println(s"员工 $currentEmployeeId 发利是给员工 $recipientId $price 元")
+    if (currentEmployeeId > 0) sendRedPack(currentEmployeeId - 1, price + 1)
+  }
+
+  sendRedPack(maxEmployeeId, maxEmployeeId)
+  //员工 9999 发利是给员工 0 9999 元
+  //员工 9998 发利是给员工 9999 10000 元
+  //员工 9997 发利是给员工 9998 10001 元
+  //员工 9996 发利是给员工 9997 10002 元
+  //...
+  //员工 4 发利是给员工 5 19994 元
+  //员工 3 发利是给员工 4 19995 元
+  //员工 2 发利是给员工 3 19996 元
+  //员工 1 发利是给员工 2 19997 元
+  //员工 0 发利是给员工 1 19998 元
+```
+
+问题迎刃而解了,您的企业就算到了一百万人也不怕了!
+
+小提示:
+
+在IDEA中,如果您的递归符合尾递归需求,您定义的递归函数左侧会出现一个带箭头的小圆圈.如果您的递归只是普通递归,您定义的函数左侧会出现一个蚊香形状.
+
+![image-20190905123058619](/Users/renkai/Fordeal/bigdata-hands-on/src/doc/images/recursive_example.png)
+
 ## 习题
 
 牛顿迭代法求平方根
