@@ -114,7 +114,7 @@ val urlString = if (isInnerHost(hostName)) {
 
 ## 习题
 
-按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz1.scala`,更改文件中的`???`.在项目根目录下执行`./gradlew run --args='quiz.Quiz1'`,获得以下输出说明习题完成.
+按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz1.scala`,更改文件中的`???`为您的答案.在项目根目录下执行`./gradlew run --args='quiz.Quiz1'`,获得以下输出说明习题完成.
 
 ```
 1 + 1 = 2

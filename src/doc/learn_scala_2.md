@@ -399,7 +399,7 @@ Scala因为继承了JVM的设计,也是允许`null`值出现的,但是您在Scal
 
 ## 习题
 
-按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz2.scala`,更改文件中的`???`.在项目根目录下执行`./gradlew run --args='quiz.Quiz2'`,获得以下输出说明习题完成.
+按照[材料准备](site:/index.md#习题集)里的提示把习题下载到本地,编辑`src/main/scala/quiz/Quiz2.scala`,更改文件中的`???`为您的答案.在项目根目录下执行`./gradlew run --args='quiz.Quiz2'`,获得以下输出说明习题完成.
 
 * 喜欢挑战的同学可以考虑不看参考代码,直接编写逻辑生成下列内容.
   
