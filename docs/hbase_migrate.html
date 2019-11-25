@@ -10,7 +10,7 @@
     
      <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
-     <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
+     <link rel="prev" href="learn_scala_attach.html"  title="Scala入门(附录)"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
   <body>
     <div class="expanded row">
@@ -46,13 +46,21 @@
   <ul class="menu align-right simple a_navbar a_navbar_top">
     
       
+        <li><a href="learn_scala_attach.html"  title="Scala入门(附录)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
+    
+      
         <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
       
     
   </ul>
  
                 
-                <h3 id="hbase迁移方案" class="a_section" data-magellan-target="hbase迁移方案">hbase迁移方案<a class="a_hlink" href="#hbase迁移方案"></a></h3>
+                <h1 id="hbase迁移方案" class="a_section" data-magellan-target="hbase迁移方案">hbase迁移方案<a class="a_hlink" href="#hbase迁移方案"></a></h1>
 <h3 id="背景" class="a_section" data-magellan-target="背景">1. 背景<a class="a_hlink" href="#背景"></a></h3>
 <p>之前构建于aws emr的hbase，长期无人维护，数据存储基于s3， 业务反馈使用起来不是很稳定。</p>
 <p>老集群情况：</p>
@@ -190,6 +198,14 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
     
       
+        <li><a href="learn_scala_attach.html"  title="Scala入门(附录)" ><span class="a_foundation_icon"></span>  Previous</a></li>
+      
+    
+      
+        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+      
+    
+      
         <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
       
     
@@ -247,6 +263,15 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
     
     
   </li>
+  
+  <li  class="a_thispage" >
+    
+      
+        <a href="hbase_migrate.html">hbase迁移方案</a>
+      
+    
+    
+  </li>
  
                     </ul>
                     
@@ -265,22 +290,15 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
   
     <li>
       
-      
-        <ul class="vertical menu">  
-  
-    <li>
-      
-      
-        <ul class="vertical menu">  
-  
-    <li>
-      
          <a href="#hbase迁移方案">hbase迁移方案</a> 
       
       
-    </li>
+        <ul class="vertical menu">  
   
-  
+    <li>
+      
+      
+        <ul class="vertical menu">  
   
     <li>
       
@@ -305,11 +323,6 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
   
     <li>
       
-      
-        <ul class="vertical menu">  
-  
-    <li>
-      
          <a href="#方案选择">2.1 方案选择</a> 
       
       
@@ -320,11 +333,6 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
     <li>
       
          <a href="#方案实施">2.2 方案实施</a> 
-      
-      
-        <ul class="vertical menu">  
-  
-    <li>
       
       
         <ul class="vertical menu">  
@@ -385,20 +393,12 @@ alter <span class="hljs-string">'tbl'</span>, {COMPRESSION=&gt;SNAPPY}
       
     </li>
   
-  </ul>
-      
-    </li>
-  
   
   
     <li>
       
          <a href="#参考">参考</a> 
       
-      
-    </li>
-  
-  </ul>
       
     </li>
   
