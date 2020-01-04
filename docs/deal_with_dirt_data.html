@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="theme/css/foundation.min.css">
     <link rel="stylesheet" href="theme/css/app.css">
     
-     <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
+     <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
      <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
@@ -75,7 +75,60 @@
 </ul>
 <h2 id="不良示范" class="a_section" data-magellan-target="不良示范">不良示范<a class="a_hlink" href="#不良示范"></a></h2>
 <h3 id="藏匿异常最糟糕的动作" class="a_section" data-magellan-target="藏匿异常最糟糕的动作">藏匿异常(最糟糕的动作)<a class="a_hlink" href="#藏匿异常最糟糕的动作"></a></h3>
+<p>例子</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">    <span class="hljs-keyword">val</span> div_result = <span class="hljs-keyword">try</span> {
+      someHeavyJob()
+    } <span class="hljs-keyword">catch</span> {
+      <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt;
+        <span class="hljs-string">""</span>
+    }
+</code></pre>
+</div></div>
+<p>直接无视异常返回一个后续可接受的值,这个是非常危险的动作,可能会导致以下情形:</p>
+<ul>
+<li>异常发生次数和持续时间完全不可观测,系统丧失告警能力</li>
+<li>异常排查时定位问题消耗时间较长,需要重新发布,甚至多次重新发布才能成功排查问题</li>
+</ul>
 <h3 id="合并异常" class="a_section" data-magellan-target="合并异常">合并异常<a class="a_hlink" href="#合并异常"></a></h3>
+<p>一行日志的字段异常可能有以下几种情况:</p>
+<ul>
+<li>日志中应当有某个键,却没有</li>
+<li>日志中的某个键应该是某种数据类型,却不是</li>
+<li>日志中的键对应的值应当在某个范围内,却不在</li>
+</ul>
+<p>对应可能造成这些异常的原因:</p>
+<ul>
+<li>日志中应当有某个键,却没有
+<ul>
+<li>常见于客户端的处理逻辑有bug,或者使用了第三方代码库时对第三方系统了解不充分</li>
+</ul>
+</li>
+<li>日志中的某个键应该是某种数据类型,却不是
+<ul>
+<li>常见于弱类型语言操作不当(JavaScript,PHP等)</li>
+</ul>
+</li>
+<li>日志中的键对应的值应当在某个范围内,却不在
+<ul>
+<li>常见于客户端采集用户输入时没有充分约束</li>
+</ul>
+</li>
+</ul>
+<p>一个合并异常的例子:</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">merge_exception_demo</span></span>() = {
+    <span class="hljs-keyword">val</span> map = <span class="hljs-type">Map</span>(<span class="hljs-string">"key_a"</span> -&gt; <span class="hljs-string">"val_a"</span>, <span class="hljs-string">"key_b"</span> -&gt; <span class="hljs-string">"val_b"</span>)
+    <span class="hljs-keyword">val</span> valC = map.getOrElse(<span class="hljs-string">"key_c"</span>,<span class="hljs-string">""</span>)
+  }
+</code></pre>
+</div></div>
+<p>这段示例代码合并了第一项和第三项异常,合并异常会造成以下问题:</p>
+<ul>
+<li>排查链路延长,异常发生时,从只需要客户端排查异常,延伸到了客户端和ETL层都要排查异常.</li>
+<li>异常发现节点后推,本来可以在ETL层发现的异常,可能会后推倒应用层才能发现.</li>
+<li>上游(客户端)异常排查范围增加,由于异常合并,上游需要在更多的可能性中找到问题根源,排查时间随之增加.</li>
+</ul>
 <h3 id="不捕获异常" class="a_section" data-magellan-target="不捕获异常">不捕获异常<a class="a_hlink" href="#不捕获异常"></a></h3>
 <h3 id="异常范围过宽" class="a_section" data-magellan-target="异常范围过宽">异常范围过宽<a class="a_hlink" href="#异常范围过宽"></a></h3>
 <h2 id="利用类型系统排错和提升效率" class="a_section" data-magellan-target="利用类型系统排错和提升效率">利用类型系统排错和提升效率<a class="a_hlink" href="#利用类型系统排错和提升效率"></a></h2>
