@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何处理脏数据:以Scala+play-json为例</title>
+    <link rel="stylesheet" href="theme/css/foundation.min.css">
+    <link rel="stylesheet" href="theme/css/app.css">
+    
+     <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
+    
+     <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
+  </head>
+  <body>
+    <div class="expanded row">
+      <div class="small-12 medium-12 large-12 columns align-self-top">
+        <div class="row">
+          
+          <header class="large-12 columns align-self-top a_header">
+            <div class="row">
+              <div class="large-12 columns a_limited top-bar">
+                <div class="top-bar-left">
+                  <p>Fordeal数据平台 技术讲义</p>
+
+                </div>
+                <div class="top-bar-right align-right row">
+                  
+                  
+                    <form action="site-search.html" method="get" class="align-right a_search">
+                      <input name="q" type="search"  placeholder="Search
+" >
+                      <button><img alt="&#1F50D;" src="theme/images/search.svg" /></button>
+                    </form>
+                  
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <div class="small-12 medium-12 large-12 columns align-self-top a_limited a_main">
+            <div class="row">
+              
+              <main class="columns large-order-2 sections" id="_sections">
+                 
+  <ul class="menu align-right simple a_navbar a_navbar_top">
+    
+      
+        <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
+      
+    
+  </ul>
+ 
+                
+                <h1 id="如何处理脏数据以scalaplay-json为例" class="a_section" data-magellan-target="如何处理脏数据以scalaplay-json为例">如何处理脏数据:以Scala+play-json为例<a class="a_hlink" href="#如何处理脏数据以scalaplay-json为例"></a></h1>
+<p>数据采集是数据处理的第一站,由于采集过程中数据来源复杂,需要经常处理有脏数据的情况.我们在采集中将各种意外情况妥善处理后,才能为后续的用户用更简单可靠的方式处理数据提供可能性(让只会SQL的人也能处理数据).</p>
+<h2 id="整体原则" class="a_section" data-magellan-target="整体原则">整体原则<a class="a_hlink" href="#整体原则"></a></h2>
+<ul>
+<li>任务不崩溃
+<ul>
+<li>任务崩溃之后需要人为恢复并牺牲后续依赖它的系统运行的时间,<strong>造成经济损失</strong></li>
+<li>除了硬件和系统故障之外,我们有充分的手段不让任务因内容异常而崩溃</li>
+</ul>
+</li>
+<li>异常有统一记录点
+<ul>
+<li>异常记录分散的情况消耗排查者过多时间(牺牲后续依赖它的系统运行的时间,<strong>造成经济损失</strong>),并增加新人学习成本</li>
+</ul>
+</li>
+<li>异常记录足够详细
+<ul>
+<li>异常记录过于宽泛会消耗排查者过多时间,甚至要变更代码重新发布来排查异常(牺牲后续依赖它的系统运行的时间,<strong>造成经济损失</strong>)</li>
+</ul>
+</li>
+</ul>
+<h2 id="不良示范" class="a_section" data-magellan-target="不良示范">不良示范<a class="a_hlink" href="#不良示范"></a></h2>
+<h3 id="藏匿异常最糟糕的动作" class="a_section" data-magellan-target="藏匿异常最糟糕的动作">藏匿异常(最糟糕的动作)<a class="a_hlink" href="#藏匿异常最糟糕的动作"></a></h3>
+<h3 id="合并异常" class="a_section" data-magellan-target="合并异常">合并异常<a class="a_hlink" href="#合并异常"></a></h3>
+<h3 id="不捕获异常" class="a_section" data-magellan-target="不捕获异常">不捕获异常<a class="a_hlink" href="#不捕获异常"></a></h3>
+<h3 id="异常范围过宽" class="a_section" data-magellan-target="异常范围过宽">异常范围过宽<a class="a_hlink" href="#异常范围过宽"></a></h3>
+<h2 id="利用类型系统排错和提升效率" class="a_section" data-magellan-target="利用类型系统排错和提升效率">利用类型系统排错和提升效率<a class="a_hlink" href="#利用类型系统排错和提升效率"></a></h2>
+<h3 id="代数数据类型-algebraic-data-type" class="a_section" data-magellan-target="代数数据类型-algebraic-data-type">代数数据类型 Algebraic Data Type<a class="a_hlink" href="#代数数据类型-algebraic-data-type"></a></h3>
+<h3 id="利用adt-确认逻辑完整性" class="a_section" data-magellan-target="利用adt-确认逻辑完整性">利用ADT 确认逻辑完整性<a class="a_hlink" href="#利用adt-确认逻辑完整性"></a></h3>
+<h3 id="利用类型系统消除空指针异常" class="a_section" data-magellan-target="利用类型系统消除空指针异常">利用类型系统消除空指针异常<a class="a_hlink" href="#利用类型系统消除空指针异常"></a></h3>
+<h3 id="利用类型系统合理设计逻辑精细度" class="a_section" data-magellan-target="利用类型系统合理设计逻辑精细度">利用类型系统合理设计逻辑精细度<a class="a_hlink" href="#利用类型系统合理设计逻辑精细度"></a></h3>
+<h3 id="利用类型系统确保错误处理" class="a_section" data-magellan-target="利用类型系统确保错误处理">利用类型系统确保错误处理<a class="a_hlink" href="#利用类型系统确保错误处理"></a></h3>
+<h3 id="利用类型系统做短路逻辑" class="a_section" data-magellan-target="利用类型系统做短路逻辑">利用类型系统做短路逻辑<a class="a_hlink" href="#利用类型系统做短路逻辑"></a></h3>
+
+                 
+  <ul class="menu align-right simple a_navbar a_navbar_bottom">
+    
+      
+        <li><a href="site-contents.html"  title="Table of Contents" ><span class="a_foundation_icon"></span>  Contents</a></li>
+      
+    
+  </ul>
+ 
+              </main>
+              
+              
+                <div data-sticky-container class="small-12 medium-12 large-2 large-order-1 columns a_sitenav_container">
+                  <nav class="a_sitenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                    
+                    <ul>
+                       
+  <li >
+    
+      
+        <a href="index.html">Scala 语言入门:材料准备</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="learn_scala_1.html">Scala入门(一)</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="learn_scala_2.html">Scala入门(二)</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="learn_scala_3.html">Scala入门(三)</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="learn_scala_attach.html">Scala入门(附录)</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="hbase_migrate.html">hbase迁移方案</a>
+      
+    
+    
+  </li>
+ 
+                    </ul>
+                    
+                    
+                  </nav>
+                </div>
+              
+              
+              
+                <div class="small-12 medium-12 large-2 large-order-3 columns a_show-for-xlarge" data-sticky-container>
+                  <nav class="a_pagenav" data-sticky data-sticky-on="large" data-anchor="_sections">
+                     <header><p>On This Page</p>
+</header> 
+                    <ul class="vertical menu" data-magellan>
+                       
+  
+    <li>
+      
+         <a href="#如何处理脏数据以scalaplay-json为例">如何处理脏数据:以Scala+play-json为例</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#整体原则">整体原则</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#不良示范">不良示范</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#藏匿异常最糟糕的动作">藏匿异常(最糟糕的动作)</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#合并异常">合并异常</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#不捕获异常">不捕获异常</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#异常范围过宽">异常范围过宽</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用类型系统排错和提升效率">利用类型系统排错和提升效率</a> 
+      
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#代数数据类型-algebraic-data-type">代数数据类型 Algebraic Data Type</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用adt-确认逻辑完整性">利用ADT 确认逻辑完整性</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用类型系统消除空指针异常">利用类型系统消除空指针异常</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用类型系统合理设计逻辑精细度">利用类型系统合理设计逻辑精细度</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用类型系统确保错误处理">利用类型系统确保错误处理</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#利用类型系统做短路逻辑">利用类型系统做短路逻辑</a> 
+      
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+  </ul>
+      
+    </li>
+  
+ 
+                    </ul>
+                  </nav>
+                </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer class="small-12 medium-12 large-12 columns align-self-bottom a_footer">
+        <div class="row">
+          <div class="small-12 medium-12 large-12 columns top-bar">
+            <div class="top-bar-left">
+              
+            </div>
+            <div class="top-bar-right">
+              <p>Generated with <a href="https://github.com/szeiger/ornate">Ornate</a>.</p>
+
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script src="theme/js/jquery.min.js"></script>
+    <script src="theme/js/what-input.min.js"></script>
+    <script src="theme/js/foundation.min.js"></script>
+    
+    <script src="theme/js/app.js"></script>
+    
+  </body>
+</html>
