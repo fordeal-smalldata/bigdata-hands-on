@@ -93,6 +93,25 @@
 
 ### 代数数据类型 Algebraic Data Type
 
+这里先介绍下代数数据类型的概念,代数数据类型一个简单描述是: 该类型(在Scala中为sealed trait)的所有实例(在Scala中为case class)都可以用已经定义的实例排列组合而成.一个典型的代数数据类型就是Json,我们看看play-json是怎么用代数数据类型定义Json的.
+
+```scala
+sealed trait JsValue
+
+case object JsNull extends JsValue
+sealed abstract class JsBoolean(val value: Boolean)
+case object JsTrue extends JsBoolean(true)
+case object JsFalse extends JsBoolean(false)
+case class JsNumber(value: BigDecimal) extends JsValue
+case class JsString(value: String) extends JsValue
+case class JsArray(value: IndexedSeq[JsValue] = Array[JsValue]()) extends JsValue
+case class JsObject(
+    private[json] val underlying: Map[String, JsValue]
+) extends JsValue
+```
+
+
+
 ### 利用ADT 确认逻辑完整性
 
 ### 利用类型系统消除空指针异常

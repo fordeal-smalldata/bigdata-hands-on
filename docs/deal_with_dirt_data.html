@@ -150,6 +150,22 @@
 <p>这种做法只完成了三项基本原则中的一项,任务不崩溃,后续两项都没做到,常见于上一项问题[不捕获异常]发生后的懒人方案.这种方案造成的问题基本上相当于[合并异常]</p>
 <h2 id="利用类型系统排错和提升效率" class="a_section" data-magellan-target="利用类型系统排错和提升效率">利用类型系统排错和提升效率<a class="a_hlink" href="#利用类型系统排错和提升效率"></a></h2>
 <h3 id="代数数据类型-algebraic-data-type" class="a_section" data-magellan-target="代数数据类型-algebraic-data-type">代数数据类型 Algebraic Data Type<a class="a_hlink" href="#代数数据类型-algebraic-data-type"></a></h3>
+<p>这里先介绍下代数数据类型的概念,代数数据类型一个简单描述是: 该类型(在Scala中为sealed trait)的所有实例(在Scala中为case class)都可以用已经定义的实例排列组合而成.一个典型的代数数据类型就是Json,我们看看play-json是怎么用代数数据类型定义Json的.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala"><span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">JsValue</span></span>
+
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">JsNull</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsValue</span></span>
+<span class="hljs-keyword">sealed</span> <span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsBoolean</span>(<span class="hljs-params">val value: <span class="hljs-type">Boolean</span></span>)</span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">JsTrue</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsBoolean</span>(<span class="hljs-params">true</span>)</span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">JsFalse</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JsBoolean</span>(<span class="hljs-params">false</span>)</span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsNumber</span>(<span class="hljs-params">value: <span class="hljs-type">BigDecimal</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JsValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsString</span>(<span class="hljs-params">value: <span class="hljs-type">String</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JsValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsArray</span>(<span class="hljs-params">value: <span class="hljs-type">IndexedSeq</span>[<span class="hljs-type">JsValue</span>] = <span class="hljs-type">Array</span>[<span class="hljs-type">JsValue</span>](</span>)) <span class="hljs-keyword">extends</span> <span class="hljs-title">JsValue</span></span>
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JsObject</span>(<span class="hljs-params">
+    private[json] val underlying: <span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">JsValue</span>]
+</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">JsValue</span></span>
+</code></pre>
+</div></div>
 <h3 id="利用adt-确认逻辑完整性" class="a_section" data-magellan-target="利用adt-确认逻辑完整性">利用ADT 确认逻辑完整性<a class="a_hlink" href="#利用adt-确认逻辑完整性"></a></h3>
 <h3 id="利用类型系统消除空指针异常" class="a_section" data-magellan-target="利用类型系统消除空指针异常">利用类型系统消除空指针异常<a class="a_hlink" href="#利用类型系统消除空指针异常"></a></h3>
 <h3 id="利用类型系统合理设计逻辑精细度" class="a_section" data-magellan-target="利用类型系统合理设计逻辑精细度">利用类型系统合理设计逻辑精细度<a class="a_hlink" href="#利用类型系统合理设计逻辑精细度"></a></h3>
