@@ -130,7 +130,24 @@
 <li>上游(客户端)异常排查范围增加,由于异常合并,上游需要在更多的可能性中找到问题根源,排查时间随之增加.</li>
 </ul>
 <h3 id="不捕获异常" class="a_section" data-magellan-target="不捕获异常">不捕获异常<a class="a_hlink" href="#不捕获异常"></a></h3>
+<p>对可能发生异常的地方不捕获异常,会在异常发生时导致程序崩溃,造成直接损失.</p>
+<p>同时,也容易造成异常发生时处理方法过于仓促,处理过程不够干净,导致异常处理代码进入[藏匿异常,合并异常,异常范围过宽]的陷阱中.</p>
+<p>如何避免这种情况:</p>
+<ul>
+<li>充分考虑方法的各种异常可能性,尤其是认真查看相关代码的签名和注释根据情况增加处理代码</li>
+</ul>
 <h3 id="异常范围过宽" class="a_section" data-magellan-target="异常范围过宽">异常范围过宽<a class="a_hlink" href="#异常范围过宽"></a></h3>
+<p>样例:</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wide_exception_demo</span></span>() = <span class="hljs-keyword">try</span> {
+    <span class="hljs-comment">//...... 大量可能抛出不同异常的代码</span>
+  } <span class="hljs-keyword">catch</span> {
+    <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt;
+      <span class="hljs-comment">// ..... 不分异常类型的简单处理</span>
+  }
+</code></pre>
+</div></div>
+<p>这种做法只完成了三项基本原则中的一项,任务不崩溃,后续两项都没做到,常见于上一项问题[不捕获异常]发生后的懒人方案</p>
 <h2 id="利用类型系统排错和提升效率" class="a_section" data-magellan-target="利用类型系统排错和提升效率">利用类型系统排错和提升效率<a class="a_hlink" href="#利用类型系统排错和提升效率"></a></h2>
 <h3 id="代数数据类型-algebraic-data-type" class="a_section" data-magellan-target="代数数据类型-algebraic-data-type">代数数据类型 Algebraic Data Type<a class="a_hlink" href="#代数数据类型-algebraic-data-type"></a></h3>
 <h3 id="利用adt-确认逻辑完整性" class="a_section" data-magellan-target="利用adt-确认逻辑完整性">利用ADT 确认逻辑完整性<a class="a_hlink" href="#利用adt-确认逻辑完整性"></a></h3>
