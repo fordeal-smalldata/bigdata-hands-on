@@ -316,7 +316,7 @@
   }
 </code></pre>
 </div></div>
-<p>这样写的话,如果返回值为<code class="hljs language-scala"><span class="hljs-type">None</span></code>就可以表达&quot;没有合适的值&quot;这种情况,得到<code class="hljs language-scala"><span class="hljs-string">""</span></code>就说明是真的返回值为<code class="hljs language-scala"><span class="hljs-string">""</span></code></p>
+<p>这样写的话,如果返回值为<code class="hljs language-scala"><span class="hljs-type">None</span></code>就可以表达&quot;没有合适的值&quot;这种情况,得到<code class="hljs language-scala"><span class="hljs-string">""</span></code>就说明是真的返回值为<code class="hljs language-scala"><span class="hljs-string">""</span></code>,代码有了&quot;自文档&quot;的能力,有了更多的信息可以告诉别人(这个别人可能就是三个月后的你自己).</p>
 <p>小技巧: 避免使用<code class="hljs language-scala">getOrElse(<span class="hljs-string">""</span>)</code>,<code class="hljs language-scala">getOrElse(<span class="hljs-number">0</span>)</code>,<code class="hljs language-scala">getOrElse(<span class="hljs-number">-1</span>)</code>,等操作,可以很大程度避免这种情况.</p>
 <ul>
 <li>单纯为了避免异常而写出不会抛异常的代码,忽略了在程序不崩溃的情况下记录异常的需求</li>
@@ -328,7 +328,14 @@
   }
 </code></pre>
 </div></div>
-<p>这段代码不会抛异常,但是这个&quot;不抛异常&quot;到底是不是我们想要的东西呢?如果按正常情况,代码就应该返回<code class="hljs language-scala"><span class="hljs-type">Some</span>[<span class="hljs-type">String</span>]</code>,</p>
+<p>这段代码不会抛异常,但是这个&quot;不抛异常&quot;到底是不是我们想要的东西呢?如果按正常情况,代码就应该返回<code class="hljs language-scala"><span class="hljs-type">Some</span>[<span class="hljs-type">String</span>]</code>,返回<code class="hljs language-scala"><span class="hljs-type">None</span></code>是不正常的情况,那么我们就应该在返回<code class="hljs language-scala"><span class="hljs-type">None</span></code>的时候抛出异常,把异常的发生量作为一种监控手段,在异常大量发生的时候获得警告.函数就可以这么定义.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">try_head_by_space_</span></span>(str: <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Try</span>[<span class="hljs-type">String</span>] = <span class="hljs-type">Try</span> {
+    str.get.split(<span class="hljs-string">" "</span>).head
+  }
+</code></pre>
+</div></div>
+<p>此时如果在<code class="hljs language-scala"><span class="hljs-type">Try</span></code>包围的逻辑块里发生任何异常,得到的结果就会是<code class="hljs language-scala"><span class="hljs-type">Failure</span>[<span class="hljs-type">Exception</span>]</code>,异常能被捕获,程序不会崩溃退出,类型系统还会告诉你,你得在未来的某个时候处理掉这些异常(通常是写进某个日志渠道).</p>
 <h3 id="利用类型系统确保错误处理" class="a_section" data-magellan-target="利用类型系统确保错误处理">利用类型系统确保错误处理<a class="a_hlink" href="#利用类型系统确保错误处理"></a></h3>
 <h3 id="利用类型系统做短路逻辑" class="a_section" data-magellan-target="利用类型系统做短路逻辑">利用类型系统做短路逻辑<a class="a_hlink" href="#利用类型系统做短路逻辑"></a></h3>
 
