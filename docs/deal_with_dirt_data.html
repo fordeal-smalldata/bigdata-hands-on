@@ -386,7 +386,7 @@
 </code></pre>
 </div></div>
 <h3 id="利用类型系统做短路逻辑" class="a_section" data-magellan-target="利用类型系统做短路逻辑">利用类型系统做短路逻辑<a class="a_hlink" href="#利用类型系统做短路逻辑"></a></h3>
-<p>利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了(任何一步是Fail的话,之后的代码都不会再被执行了),其实它还能应对更复杂的场景.我们结合上一步的例子再增加一些代码:</p>
+<p>利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了(任何一步是Fail的话,之后的代码都不会再被执行了,妥善利用类型系统的话,我们几乎就不需要在函数中间写<code class="hljs language-scala"><span class="hljs-keyword">return</span></code>语句了),其实它还能应对更复杂的场景.我们结合上一步的例子再增加一些代码:</p>
 <div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
 <pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">try_head_by_space_</span></span>(str: <span class="hljs-type">String</span>): <span class="hljs-type">Try</span>[<span class="hljs-type">String</span>] = <span class="hljs-type">Try</span> {
     str.split(<span class="hljs-string">" "</span>)(<span class="hljs-number">1</span>)
@@ -414,6 +414,14 @@
 </code></pre>
 </div></div>
 <p>这个地方我们又增添了一个返回值为<code class="hljs language-scala"><span class="hljs-type">Option</span>[<span class="hljs-type">Int</span>]</code>的方法,加入到了for语句中.为了让这个<code class="hljs language-scala"><span class="hljs-keyword">for</span></code>语句拥有和<code class="hljs language-scala"><span class="hljs-type">Try</span></code>,<code class="hljs language-scala"><span class="hljs-type">Option</span></code>相兼容的结果类型,我们对<code class="hljs language-scala"><span class="hljs-type">Try</span></code>和<code class="hljs language-scala"><span class="hljs-type">Option</span></code>都进行了<code class="hljs language-scala">toEither</code>操作(<code class="hljs language-scala"><span class="hljs-type">Try</span></code>和<code class="hljs language-scala"><span class="hljs-type">Option</span></code>都可以看作是<code class="hljs language-scala"><span class="hljs-type">Either</span></code>的特殊情况).</p>
+<p>以此类推,<code class="hljs language-scala"><span class="hljs-type">Option</span></code>,<code class="hljs language-scala"><span class="hljs-type">Seq</span></code>,<code class="hljs language-scala"><span class="hljs-type">Vector</span></code>,<code class="hljs language-scala"><span class="hljs-type">Map</span></code>,<code class="hljs language-scala"><span class="hljs-type">Set</span></code>等都可以看作是<code class="hljs language-scala"><span class="hljs-type">Collection</span></code>的特殊情况来利用for作短路.</p>
+<h2 id="总结" class="a_section" data-magellan-target="总结">总结<a class="a_hlink" href="#总结"></a></h2>
+<p>本文介绍了很多处理非正常数据的技巧,但这些技巧都不是在任何地方都适用的,请在充分掌握的情况下根据不同的情况善用他们.尤其记得,这些技巧都是为我们的数据处理原则服务的.写代码的时候请尽量能让我们的数据处理原则得到体现,而不是一味地以程序不会异常退出为目标编写代码.</p>
+<ul>
+<li>任务不崩溃</li>
+<li>异常有统一记录点</li>
+<li>异常记录足够详细</li>
+</ul>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">
@@ -662,6 +670,15 @@
     </li>
   
   </ul>
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#总结">总结</a> 
+      
       
     </li>
   
