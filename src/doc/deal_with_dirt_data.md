@@ -372,5 +372,32 @@ object NullPointerSafeDemo {
 
 ### 利用类型系统做短路逻辑
 
-利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了,我们这里来一个更加复杂的例子.我们先看一串Java代码:
+利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了(任何一步是Fail的话,之后的代码都不会再被执行了),其实它还能应对更复杂的场景.我们结合上一步的例子再增加一些代码:
 
+```scala
+  def try_head_by_space_(str: String): Try[String] = Try {
+    str.split(" ")(1)
+  }
+
+  def try_to_int(str: String): Try[Int] = Try {
+    str.toInt
+  }
+
+  def keep_even_number(num: Int): Option[Int] = Option(num).filter(_ % 2 == 0)
+
+  def main(args: Array[String]): Unit = {
+    val num =
+      for (head <- try_head_by_space_("aaa 233").toEither;
+           num <- try_to_int(head).toEither;
+           even <- keep_even_number(num).toRight(new Exception(s"$num is not even")))
+        yield even
+
+    num match {
+      case Right(res) => println(s"success fully get number $res")
+      case Left(e) => println(e)
+      // java.lang.Exception: 233 is not even
+    }
+  }
+```
+
+这个地方我们又增添了一个返回值为`Option[Int]`的方法,加入到了for语句中.为了让这个`for`语句拥有和`Try`,`Option`相兼容的结果类型,我们对`Try`和`Option`都进行了`toEither`操作(`Try`和`Option`都可以看作是`Either`的特殊情况).
