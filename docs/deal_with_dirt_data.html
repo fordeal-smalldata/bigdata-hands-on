@@ -245,6 +245,90 @@
 <p>这段代码遇到传入空指针不会报错,你的可能对null进行操作而触发异常的代码都因为有类型系统的保护,不会在传入值为null时被运行了.</p>
 <p>可能有人会觉得,上面那一版Java代码自己加一行<code class="hljs language-scala"><span class="hljs-keyword">if</span>(str != <span class="hljs-literal">null</span>)</code>也能解决,使用<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的好处在哪里呢?区别在于,我们使用<code class="hljs language-scala"><span class="hljs-type">Option</span></code>的话,一个值到底会不会为空,该处理的空值有没有被遗漏这些情况我们就都可以交给编译器解决,如果编译通过了,就说明该处理的情况都被处理了,有效地降低了开发者为了空指针安全所需要承担的心智负担.</p>
 <h3 id="利用类型系统合理设计逻辑精细度" class="a_section" data-magellan-target="利用类型系统合理设计逻辑精细度">利用类型系统合理设计逻辑精细度<a class="a_hlink" href="#利用类型系统合理设计逻辑精细度"></a></h3>
+<p>解析数据的时候,需要处理的各种可能性会很多,为了确保没有漏网之鱼,我们需要对各种情况进行全面处理,一个最详细的全面处理代码如下所示</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">most_detailed_json_lookup</span></span>() = {
+    <span class="hljs-keyword">val</span> json: <span class="hljs-type">JsValue</span> = ???
+    json \ <span class="hljs-string">"key"</span> <span class="hljs-keyword">match</span> { <span class="hljs-comment">//匹配一个JsLookupResult</span>
+      <span class="hljs-comment">//有这个键,列出所有可能的情况</span>
+      <span class="hljs-keyword">case</span> <span class="hljs-type">JsDefined</span>(value) =&gt; value <span class="hljs-keyword">match</span> {
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JsNull</span> =&gt; ???
+        <span class="hljs-keyword">case</span> boolean: <span class="hljs-type">JsBoolean</span> =&gt; ???
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JsNumber</span>(value) =&gt; ???
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JsString</span>(value) =&gt; ???
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JsArray</span>(value) =&gt; ???
+        <span class="hljs-keyword">case</span> <span class="hljs-type">JsObject</span>(underlying) =&gt; ???
+      }
+      <span class="hljs-keyword">case</span> undefined: <span class="hljs-type">JsUndefined</span> =&gt;
+        <span class="hljs-comment">//处理没有这个键的情况,下方的处理情况是抛出了一个异常说明应该有这个键却没有</span>
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">Exception</span>(<span class="hljs-string">s"error occurred when try to get key from <span class="hljs-subst">$json</span> : <span class="hljs-subst">${undefined.validationError}</span>"</span>)
+    }
+  }
+</code></pre>
+</div></div>
+<p>如果每次解析都要这么写,未免有些太辛苦了,下面我们来看下通过不同API,获得不同类型的结果,来简化处理代码的情况</p>
+<h4 id="数据一定要有并且类型也是确定的" class="a_section" data-magellan-target="数据一定要有并且类型也是确定的">数据一定要有,并且类型也是确定的<a class="a_hlink" href="#数据一定要有并且类型也是确定的"></a></h4>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simplified_json_lookup</span></span>() = {
+    <span class="hljs-keyword">val</span> json: <span class="hljs-type">JsValue</span> = ???
+    <span class="hljs-keyword">val</span> expectedInt = (json \ <span class="hljs-string">"key"</span>).as[<span class="hljs-type">Int</span>]
+  }
+</code></pre>
+</div></div>
+<p>这个方法只在有&quot;key&quot;这个键,并且对应Json字段能映射成<code class="hljs language-scala"><span class="hljs-type">Int</span></code>时能够执行成功,否则就会抛异常,需要在外部调用侧有异常处理</p>
+<h4 id="数据可以有可以没有但是如果有的话类型是确定的" class="a_section" data-magellan-target="数据可以有可以没有但是如果有的话类型是确定的">数据可以有可以没有,但是如果有的话,类型是确定的<a class="a_hlink" href="#数据可以有可以没有但是如果有的话类型是确定的"></a></h4>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simplified_json_lookup2</span></span>() = {
+    <span class="hljs-keyword">val</span> json: <span class="hljs-type">JsValue</span> = ???
+    <span class="hljs-keyword">val</span> expectedInt = (json \ <span class="hljs-string">"key"</span>).asOpt[<span class="hljs-type">Int</span>]
+  }
+</code></pre>
+</div></div>
+<p>这种做法不会抛出异常,不论键有没有,类型吻不吻合</p>
+<h4 id="数据可以有也可以没有而且有的话类型也有多种可能性" class="a_section" data-magellan-target="数据可以有也可以没有而且有的话类型也有多种可能性">数据可以有也可以没有,而且有的话类型也有多种可能性<a class="a_hlink" href="#数据可以有也可以没有而且有的话类型也有多种可能性"></a></h4>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">simplified_json_lookup3</span></span>() = {
+    <span class="hljs-keyword">val</span> json: <span class="hljs-type">JsValue</span> = ???
+    <span class="hljs-keyword">val</span> expectedInt = (json \ <span class="hljs-string">"key"</span>).asOpt[<span class="hljs-type">JsValue</span>].map {
+      <span class="hljs-keyword">case</span> <span class="hljs-type">JsNumber</span>(num) =&gt; num.toInt
+      <span class="hljs-keyword">case</span> <span class="hljs-type">JsString</span>(str) =&gt; str.toInt
+      <span class="hljs-keyword">case</span> unexpected =&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">Exception</span>(unexpected.toString())
+    }
+  }
+</code></pre>
+</div></div>
+<p>这种做法不会因为没有相应的键而抛异常,但会因为类型匹配或者处理过程中的代码而抛异常</p>
+<h4 id="设计逻辑精度时容易出现的问题" class="a_section" data-magellan-target="设计逻辑精度时容易出现的问题">设计逻辑精度时容易出现的问题<a class="a_hlink" href="#设计逻辑精度时容易出现的问题"></a></h4>
+<ul>
+<li>行为和设计意图不符,或者设计意图没有充分表达,常见于API不够熟悉或者缺少设计意识的情况</li>
+</ul>
+<p>例:</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">head_by_space_str</span></span>(str: <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">String</span> = {
+    str.flatMap(_.split(<span class="hljs-string">" "</span>).headOption).getOrElse(<span class="hljs-string">""</span>)
+  }
+</code></pre>
+</div></div>
+<p>这段代码的设计意图应该是&quot;head可以没有&quot;,但是函数签名上没有充分表达出来,当调用者收到一个<code class="hljs language-scala"><span class="hljs-string">""</span></code>的时候,调用者不知道是真的结果是<code class="hljs language-scala"><span class="hljs-string">""</span></code>,还是因为没有合适的值所以用一个<code class="hljs language-scala"><span class="hljs-string">""</span></code>代替,我们换个写法</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">head_by_space</span></span>(str: <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>] = {
+    str.flatMap(_.split(<span class="hljs-string">" "</span>).headOption)
+  }
+</code></pre>
+</div></div>
+<p>这样写的话,如果返回值为<code class="hljs language-scala"><span class="hljs-type">None</span></code>就可以表达&quot;没有合适的值&quot;这种情况,得到<code class="hljs language-scala"><span class="hljs-string">""</span></code>就说明是真的返回值为<code class="hljs language-scala"><span class="hljs-string">""</span></code></p>
+<p>小技巧: 避免使用<code class="hljs language-scala">getOrElse(<span class="hljs-string">""</span>)</code>,<code class="hljs language-scala">getOrElse(<span class="hljs-number">0</span>)</code>,<code class="hljs language-scala">getOrElse(<span class="hljs-number">-1</span>)</code>,等操作,可以很大程度避免这种情况.</p>
+<ul>
+<li>单纯为了避免异常而写出不会抛异常的代码,忽略了在程序不崩溃的情况下记录异常的需求</li>
+</ul>
+<p>我们再审视一遍<code class="hljs language-scala">head_by_space</code></p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">head_by_space</span></span>(str: <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Option</span>[<span class="hljs-type">String</span>] = {
+    str.flatMap(_.split(<span class="hljs-string">" "</span>).headOption)
+  }
+</code></pre>
+</div></div>
+<p>这段代码不会抛异常,但是这个&quot;不抛异常&quot;到底是不是我们想要的东西呢?如果按正常情况,代码就应该返回<code class="hljs language-scala"><span class="hljs-type">Some</span>[<span class="hljs-type">String</span>]</code>,</p>
 <h3 id="利用类型系统确保错误处理" class="a_section" data-magellan-target="利用类型系统确保错误处理">利用类型系统确保错误处理<a class="a_hlink" href="#利用类型系统确保错误处理"></a></h3>
 <h3 id="利用类型系统做短路逻辑" class="a_section" data-magellan-target="利用类型系统做短路逻辑">利用类型系统做短路逻辑<a class="a_hlink" href="#利用类型系统做短路逻辑"></a></h3>
 
@@ -435,6 +519,44 @@
       
          <a href="#利用类型系统合理设计逻辑精细度">利用类型系统合理设计逻辑精细度</a> 
       
+      
+        <ul class="vertical menu">  
+  
+    <li>
+      
+         <a href="#数据一定要有并且类型也是确定的">数据一定要有,并且类型也是确定的</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#数据可以有可以没有但是如果有的话类型是确定的">数据可以有可以没有,但是如果有的话,类型是确定的</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#数据可以有也可以没有而且有的话类型也有多种可能性">数据可以有也可以没有,而且有的话类型也有多种可能性</a> 
+      
+      
+    </li>
+  
+  
+  
+    <li>
+      
+         <a href="#设计逻辑精度时容易出现的问题">设计逻辑精度时容易出现的问题</a> 
+      
+      
+    </li>
+  
+  </ul>
       
     </li>
   

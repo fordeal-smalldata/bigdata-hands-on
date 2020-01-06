@@ -1,3 +1,5 @@
+
+
 # 如何处理脏数据:以Scala+play-json为例
 
 数据采集是数据处理的第一站,由于采集过程中数据来源复杂,需要经常处理有脏数据的情况.我们在采集中将各种意外情况妥善处理后,才能为后续的用户用更简单可靠的方式处理数据提供可能性(让只会SQL的人也能处理数据).
@@ -209,6 +211,105 @@ object NullPointerSafeDemo {
 可能有人会觉得,上面那一版Java代码自己加一行`if(str != null)`也能解决,使用`Option`的好处在哪里呢?区别在于,我们使用`Option`的话,一个值到底会不会为空,该处理的空值有没有被遗漏这些情况我们就都可以交给编译器解决,如果编译通过了,就说明该处理的情况都被处理了,有效地降低了开发者为了空指针安全所需要承担的心智负担.
 
 ### 利用类型系统合理设计逻辑精细度
+
+解析数据的时候,需要处理的各种可能性会很多,为了确保没有漏网之鱼,我们需要对各种情况进行全面处理,一个最详细的全面处理代码如下所示
+
+```scala
+  def most_detailed_json_lookup() = {
+    val json: JsValue = ???
+    json \ "key" match { //匹配一个JsLookupResult
+      //有这个键,列出所有可能的情况
+      case JsDefined(value) => value match {
+        case JsNull => ???
+        case boolean: JsBoolean => ???
+        case JsNumber(value) => ???
+        case JsString(value) => ???
+        case JsArray(value) => ???
+        case JsObject(underlying) => ???
+      }
+      case undefined: JsUndefined =>
+        //处理没有这个键的情况,下方的处理情况是抛出了一个异常说明应该有这个键却没有
+        throw new Exception(s"error occurred when try to get key from $json : ${undefined.validationError}")
+    }
+  }
+```
+
+如果每次解析都要这么写,未免有些太辛苦了,下面我们来看下通过不同API,获得不同类型的结果,来简化处理代码的情况
+
+#### 数据一定要有,并且类型也是确定的
+
+```scala
+  def simplified_json_lookup() = {
+    val json: JsValue = ???
+    val expectedInt = (json \ "key").as[Int]
+  }
+```
+
+这个方法只在有"key"这个键,并且对应Json字段能映射成`Int`时能够执行成功,否则就会抛异常,需要在外部调用侧有异常处理
+
+#### 数据可以有可以没有,但是如果有的话,类型是确定的
+
+```scala
+  def simplified_json_lookup2() = {
+    val json: JsValue = ???
+    val expectedInt = (json \ "key").asOpt[Int]
+  }
+```
+
+这种做法不会抛出异常,不论键有没有,类型吻不吻合
+
+#### 数据可以有也可以没有,而且有的话类型也有多种可能性
+
+```scala
+  def simplified_json_lookup3() = {
+    val json: JsValue = ???
+    val expectedInt = (json \ "key").asOpt[JsValue].map {
+      case JsNumber(num) => num.toInt
+      case JsString(str) => str.toInt
+      case unexpected => throw new Exception(unexpected.toString())
+    }
+  }
+```
+
+这种做法不会因为没有相应的键而抛异常,但会因为类型匹配或者处理过程中的代码而抛异常
+
+#### 设计逻辑精度时容易出现的问题
+
+* 行为和设计意图不符,或者设计意图没有充分表达,常见于API不够熟悉或者缺少设计意识的情况
+
+例:
+
+```scala
+  def head_by_space_str(str: Option[String]): String = {
+    str.flatMap(_.split(" ").headOption).getOrElse("")
+  }
+```
+
+这段代码的设计意图应该是"head可以没有",但是函数签名上没有充分表达出来,当调用者收到一个`""`的时候,调用者不知道是真的结果是`""`,还是因为没有合适的值所以用一个`""`代替,我们换个写法
+
+```scala
+  def head_by_space(str: Option[String]): Option[String] = {
+    str.flatMap(_.split(" ").headOption)
+  }
+```
+
+这样写的话,如果返回值为`None`就可以表达"没有合适的值"这种情况,得到`""`就说明是真的返回值为`""`
+
+小技巧: 避免使用`getOrElse("")`,``getOrElse(0)``,``getOrElse(-1)``,等操作,可以很大程度避免这种情况.
+
+* 单纯为了避免异常而写出不会抛异常的代码,忽略了在程序不崩溃的情况下记录异常的需求
+
+我们再审视一遍`head_by_space`
+
+```scala
+  def head_by_space(str: Option[String]): Option[String] = {
+    str.flatMap(_.split(" ").headOption)
+  }
+```
+
+这段代码不会抛异常,但是这个"不抛异常"到底是不是我们想要的东西呢?如果按正常情况,代码就应该返回`Some[String]`,
+
+
 
 ### 利用类型系统确保错误处理
 
