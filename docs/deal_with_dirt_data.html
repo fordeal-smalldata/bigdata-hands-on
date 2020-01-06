@@ -337,7 +337,56 @@
 </div></div>
 <p>此时如果在<code class="hljs language-scala"><span class="hljs-type">Try</span></code>包围的逻辑块里发生任何异常,得到的结果就会是<code class="hljs language-scala"><span class="hljs-type">Failure</span>[<span class="hljs-type">Exception</span>]</code>,异常能被捕获,程序不会崩溃退出,类型系统还会告诉你,你得在未来的某个时候处理掉这些异常(通常是写进某个日志渠道).</p>
 <h3 id="利用类型系统确保错误处理" class="a_section" data-magellan-target="利用类型系统确保错误处理">利用类型系统确保错误处理<a class="a_hlink" href="#利用类型系统确保错误处理"></a></h3>
+<p>假如我们有多个可能产生异常的代码块,可以利用<code class="hljs language-scala"><span class="hljs-type">Try</span></code>结构和<code class="hljs language-scala"><span class="hljs-keyword">for</span></code>语句来串联代码块,这样所有的异常最终会有一个统一的出口处理,而业务代码可以当做没有发生任何异常那样串联处理.</p>
+<div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
+<pre class="hljs"><code class="language-scala">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">try_head_by_space_</span></span>(str: <span class="hljs-type">String</span>): <span class="hljs-type">Try</span>[<span class="hljs-type">String</span>] = <span class="hljs-type">Try</span> {
+    str.split(<span class="hljs-string">" "</span>)(<span class="hljs-number">1</span>)
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">try_to_int</span></span>(str: <span class="hljs-type">String</span>): <span class="hljs-type">Try</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">Try</span> {
+    str.toInt
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+    <span class="hljs-keyword">val</span> num =
+      <span class="hljs-keyword">for</span> (head &lt;- try_head_by_space_(<span class="hljs-string">"asdds asdasd"</span>);
+           num &lt;- try_to_int(head))
+        <span class="hljs-keyword">yield</span> num
+
+    num <span class="hljs-keyword">match</span> {
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Success</span>(res) =&gt; println(<span class="hljs-string">s"success fully get number <span class="hljs-subst">$res</span>"</span>)
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Failure</span>(e) =&gt; println(e)
+        <span class="hljs-comment">// java.lang.NumberFormatException: For input string: "asdasd"</span>
+    }
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+    <span class="hljs-keyword">val</span> num =
+      <span class="hljs-keyword">for</span> (head &lt;- try_head_by_space_(<span class="hljs-string">""</span>);
+           num &lt;- try_to_int(head))
+        <span class="hljs-keyword">yield</span> num
+
+    num <span class="hljs-keyword">match</span> {
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Success</span>(res) =&gt; println(<span class="hljs-string">s"success fully get number <span class="hljs-subst">$res</span>"</span>)
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Failure</span>(e) =&gt; println(e)
+        <span class="hljs-comment">// java.lang.ArrayIndexOutOfBoundsException: 1</span>
+    }
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+    <span class="hljs-keyword">val</span> num =
+      <span class="hljs-keyword">for</span> (head &lt;- try_head_by_space_(<span class="hljs-string">"aaa 233"</span>);
+           num &lt;- try_to_int(head))
+        <span class="hljs-keyword">yield</span> num
+
+    num <span class="hljs-keyword">match</span> {
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Success</span>(res) =&gt; println(<span class="hljs-string">s"success fully get number <span class="hljs-subst">$res</span>"</span>)
+      <span class="hljs-keyword">case</span> <span class="hljs-type">Failure</span>(e) =&gt; println(e)
+        <span class="hljs-comment">// success fully get number 233</span>
+    }
+</code></pre>
+</div></div>
 <h3 id="利用类型系统做短路逻辑" class="a_section" data-magellan-target="利用类型系统做短路逻辑">利用类型系统做短路逻辑<a class="a_hlink" href="#利用类型系统做短路逻辑"></a></h3>
+<p>利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了,我们这里来一个更加复杂的例子.我们先看一串Java代码:</p>
 
                  
   <ul class="menu align-right simple a_navbar a_navbar_bottom">

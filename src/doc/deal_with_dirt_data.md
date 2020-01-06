@@ -319,7 +319,58 @@ object NullPointerSafeDemo {
 
 ### 利用类型系统确保错误处理
 
+假如我们有多个可能产生异常的代码块,可以利用`Try`结构和`for`语句来串联代码块,这样所有的异常最终会有一个统一的出口处理,而业务代码可以当做没有发生任何异常那样串联处理.
+
+```scala
+  def try_head_by_space_(str: String): Try[String] = Try {
+    str.split(" ")(1)
+  }
+
+  def try_to_int(str: String): Try[Int] = Try {
+    str.toInt
+  }
+
+  def main(args: Array[String]): Unit = {
+    val num =
+      for (head <- try_head_by_space_("asdds asdasd");
+           num <- try_to_int(head))
+        yield num
+
+    num match {
+      case Success(res) => println(s"success fully get number $res")
+      case Failure(e) => println(e)
+        // java.lang.NumberFormatException: For input string: "asdasd"
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    val num =
+      for (head <- try_head_by_space_("");
+           num <- try_to_int(head))
+        yield num
+
+    num match {
+      case Success(res) => println(s"success fully get number $res")
+      case Failure(e) => println(e)
+        // java.lang.ArrayIndexOutOfBoundsException: 1
+    }
+    
+    def main(args: Array[String]): Unit = {
+    val num =
+      for (head <- try_head_by_space_("aaa 233");
+           num <- try_to_int(head))
+        yield num
+
+    num match {
+      case Success(res) => println(s"success fully get number $res")
+      case Failure(e) => println(e)
+        // success fully get number 233
+    }
+```
+
 
 
 ### 利用类型系统做短路逻辑
+
+利用类型系统做短路逻辑的方法,其实在上面的异常处理中已经有体现了,我们这里来一个更加复杂的例子.我们先看一串Java代码:
 
