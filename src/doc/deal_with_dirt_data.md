@@ -93,7 +93,7 @@
 
 ### 代数数据类型 Algebraic Data Type
 
-这里先介绍下代数数据类型的概念,代数数据类型一个简单描述是: 该类型(在Scala中为sealed trait)的所有实例(在Scala中为case class)都可以用已经定义的实例排列组合而成.一个典型的代数数据类型就是Json,我们看看play-json是怎么用代数数据类型定义Json的.
+这里先介绍下代数数据类型的概念,代数数据类型一个简单描述是: 该类型(在Scala中为sealed trait)的所有实例(在Scala中为case class)都可以用已经定义的实例排列组合而成.一个典型的代数数据类型的应用场景就是Json,我们看看play-json是怎么用代数数据类型定义Json的.
 
 ```scala
 sealed trait JsValue
@@ -114,7 +114,99 @@ case class JsObject(
 
 ### 利用ADT 确认逻辑完整性
 
+ADT的好处都有啥,当然是能帮助大家用编译器排错啦,有了ADT之后,大家用模式匹配写代码有什么疏漏的地方,编译器就能帮你检查到.
+
+```scala
+  def try_to_int(js: JsValue): Option[Int] = {
+    Option(js).flatMap {
+      case JsNumber(v) => Option(v.intValue())
+    }
+  }
+  //It would fail on the following inputs: JsArray(_), JsFalse, JsNull, JsObject(_), JsString(_), JsTrue
+  //    Option(js).flatMap {
+  //                       ^
+  //there was one feature warning; re-run with -feature for details
+  //two warnings found
+```
+
+我们看看另一个写法↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+
+
+
+
+
+
+换成这样写就没问题啦,所有情况都照顾到了,进程不会中断,错误也能够都被保留下来(Try基本上可以看成是一个带错误信息的Option)
+
+```scala
+  def try_to_int(js: JsValue): Try[Int] = {
+    Success(js).flatMap {
+      case JsNumber(v) => Success(v.intValue())
+      case JsString(str) => Try {
+        str.toInt
+      }
+      case unexpected => Failure(new Exception(s"unexpected content $unexpected"))
+    }
+  }
+```
+
+
+
 ### 利用类型系统消除空指针异常
+
+```java
+package demo;
+
+public class NullPointerDemo {
+    public static String head_by_space(String str) {
+        return str.split(" ")[0];
+    }
+
+    public static void main(String[] args) {
+        //IDE会给一个Weak Warning
+        //Passing 'null' argument to parameter annotated as @NotNull
+        //但是在业务代码的海洋里遨游的您容易熟若无睹,而且只是在显式传入常量的时候才会给警告
+        //编译器成功编译通过,也没有给出警告
+        System.out.println(NullPointerDemo.head_by_space(null));
+    }
+}
+```
+
+上述代码给出了一个编译能通过但是运行一定会报错的情况,这种情况有没有通过更合理的设计避免呢?我们先介绍下两个概念:
+
+* [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/) Tony(不是理发师,是快速排序算法和**空指针**的发明人)对自己发明的空指针做了忏悔,生成这种设计造成了十亿美金级别的损失.
+* 所以更好的方案是什么?当然是使用更加严格的类型系统啦.更严格的类型系统是什么样的?由于没找到合适的线上资料,我们来看下<深入浅出Rust>一书中的摘抄
+
+> "类型"规定了数据可能的取值范围,规定了在这些值上可能的操作,也规定了这些数据代表的含义,还规定了这些数据存储的方式.
+>
+> 如果我们有一个类型 Thing, 它有一个成员函数doSometThing(),那么只要是这个类型的变量,就一定应该可以调用doSomeThing()函数,完成同样的操作,返回同样类型的返回值.
+>
+> 但是,null违背了这样的约定...
+
+所以Rust的String真的不会是null啦.
+
+但是Scala为了处理一些历史遗留问题(为了和Java交互…),String还是有可能为null,所以接收String的,我们来看一下在历史的这个阶段Scala能通过什么手段来处理空指针异常
+
+```scala
+package demo
+
+import scala.util.{Failure, Success, Try}
+
+object NullPointerSafeDemo {
+  def head_by_space(str: Option[String]): Option[String] = {
+    str.flatMap(_.split(" ").headOption) //Option不是String,所以必须通过map/flatMap/foreach来操作,None不会进入这些操作
+  }
+
+  def main(args: Array[String]): Unit = {
+    println(head_by_space(Option(null))) //将null变成了None
+  }
+}
+```
+
+这段代码遇到传入空指针不会报错,你的可能对null进行操作而触发异常的代码都因为有类型系统的保护,不会在传入值为null时被运行了.
+
+可能有人会觉得,上面那一版Java代码自己加一行`if(str != null)`也能解决,使用`Option`的好处在哪里呢?区别在于,我们使用`Option`的话,一个值到底会不会为空,该处理的空值有没有被遗漏这些情况我们就都可以交给编译器解决,如果编译通过了,就说明该处理的情况都被处理了,有效地降低了开发者为了空指针安全所需要承担的心智负担.
 
 ### 利用类型系统合理设计逻辑精细度
 
