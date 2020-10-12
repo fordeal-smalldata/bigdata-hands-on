@@ -10,7 +10,7 @@
     
      <link rel="stylesheet" href="theme/highlight.js/styles/github-gist.css">  <link rel="stylesheet" href="theme/css/foundation-icons.custom.css"> 
     
-     <link rel="prev" href="hbase_migrate.html"  title="hbase迁移方案"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
+     <link rel="prev" href="hbase_migrate.html"  title="hbase迁移方案"  />  <link rel="next" href="delta_lake.html"  title="大数据场景下利用DeltaLake on 对象存储代替 HDFS 的调研"  />  <link rel="start" href="index.html"  title="Scala 语言入门:材料准备"  />  <link rel="toc" href="site-contents.html"  title="Table of Contents"  /> 
   </head>
   <body>
     <div class="expanded row">
@@ -50,7 +50,7 @@
       
     
       
-        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+        <li><a href="delta_lake.html"  title="大数据场景下利用DeltaLake on 对象存储代替 HDFS 的调研" ><span class="a_foundation_icon"></span>  Next</a></li>
       
     
       
@@ -85,10 +85,7 @@
 <h3 id="藏匿异常最糟糕的动作" class="a_section" data-magellan-target="藏匿异常最糟糕的动作">藏匿异常(最糟糕的动作)<a class="a_hlink" href="#藏匿异常最糟糕的动作"></a></h3>
 <p>例子</p>
 <div class="row"><div class="a_linked small-expand columns a_xscroll a_codeblock">
-<pre class="hljs"><code class="language-scala">    <span class="hljs-keyword">val</span> div_result = <span class="hljs-keyword">try</span> {
-      someHeavyJob()
-    } <span class="hljs-keyword">catch</span> {
-      <span class="hljs-keyword">case</span> e: <span class="hljs-type">Exception</span> =&gt;
+<pre class="hljs"><code class="language-scala">null: <span class="hljs-type">Exception</span> =&gt;
         <span class="hljs-string">""</span>
     }
 </code></pre>
@@ -439,7 +436,7 @@
       
     
       
-        <li><span><span class="a_foundation_icon"></span>  Next</span></li>
+        <li><a href="delta_lake.html"  title="大数据场景下利用DeltaLake on 对象存储代替 HDFS 的调研" ><span class="a_foundation_icon"></span>  Next</a></li>
       
     
       
@@ -514,6 +511,15 @@
     
       
         <a href="deal_with_dirt_data.html">如何处理脏数据:以Scala+play-json为例</a>
+      
+    
+    
+  </li>
+  
+  <li >
+    
+      
+        <a href="delta_lake.html">大数据场景下利用DeltaLake on 对象存储代替 HDFS 的调研</a>
       
     
     
